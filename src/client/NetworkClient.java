@@ -295,6 +295,7 @@ public class NetworkClient {
                                                                 String answer = sc.nextLine();
 
                                                                 String choices = "";
+
                                                                 for (int i = 0; i < answerChoices.size(); i++) {
                                                                     if (i == answerChoices.size() - 1) {
                                                                         choices = choices + answerChoices.get(i);
@@ -308,6 +309,8 @@ public class NetworkClient {
                                                                         + "~" + answerChoiceNumber +  "\n");
                                                                 netpw.flush();
                                                                 boolean flaglocal = processServerInput();
+
+                                                                answerChoices = returnedArrayList;
 
 
                                                                 // Teacher1.addAnswerChoice(courseName, quizName,
@@ -613,12 +616,12 @@ public class NetworkClient {
                                                 String studentAnswerSheet;
                                                 while (true) {
                                                     System.out.println("What is the name of the student answer" +
-                                                            " sheet that you would like to grade?" +
+                                                            " sheet that you would like to grade? Do NOT include .txt in" +
+                                                            " the name." +
                                                             " Please select the answer sheet that contains " +
-                                                            "'finalanswers'");
+                                                            "'finalanswers'.");
                                                     studentAnswerSheet = sc.nextLine();
 
-                                                    ////////////////////////////////////////////////
                                                     netpw.write("053~" + directoryPath + "/" + studentAnswerSheet
                                                             + ".txt" + "\n");
                                                     netpw.flush();
@@ -639,8 +642,9 @@ public class NetworkClient {
                                                 flag = processServerInput();
                                                 scores = returnedArrayList;
 
-                                                   /// scores = Teacher1.printQuiz(courseName, quizName);
-                                                 if (!flag) {
+                                                /// scores = Teacher1.printQuiz(courseName, quizName);
+
+                                                if (!flag) {
                                                     System.out.println("File not found.");
                                                     return;
                                                 }
@@ -652,18 +656,25 @@ public class NetworkClient {
                                                 studentAnswers = returnedArrayList;
 
 
-                                                    //studentAnswers = Teacher1.printAnswers(directoryPath,
-                                                            //studentAnswerSheet);
+                                                //studentAnswers = Teacher1.printAnswers(directoryPath,
+                                                //studentAnswerSheet);
+
                                                  if (!flag) {
                                                     System.out.println("File not found.");
                                                     return;
                                                 }
+
                                                 String str = convertToString(scores);
+
                                                 netpw.write("083~" + str + "\n");
                                                 netpw.flush();
                                                 flag = processServerInput();
-                                                int numQuestions = returnedInt;
+                                                int numQuestions = returnedInt + 1;
+
                                                 //int numQuestions = Teacher1.numQuestions(scores);
+
+
+
                                                 int counter = 0;
                                                 int indexOfBlank = 0;
                                                 int indexNewLine = 0;
@@ -705,9 +716,8 @@ public class NetworkClient {
                                                             sc.nextLine();
                                                         }
                                                     } while (!finished);
-
+                                                    points.add(numPoints); //////////changed here
                                                     String str4 = convertIntsToString(points);
-
                                                     netpw.write("089~" + courseName + "~" + quizName + "~" +
                                                             numPoints + "~" +
                                                              str4 + "\n");
@@ -751,7 +761,6 @@ public class NetworkClient {
                                 }
                                 break;
                             } else if (teacherOrStudent.equalsIgnoreCase("student")) {
-
                                 netpw.write("011~" + username + "\n");
                                 netpw.flush();
                                 processServerInput();
@@ -878,11 +887,14 @@ public class NetworkClient {
 
                             netpw.write("007~" + username2 + "~" + newUserName  + "~" + newPassword + "\n");
                             netpw.flush();
-                            processServerInput();
-
+                            flag = processServerInput();
                             ////loginObj2.editPassword(newUserName, newPassword);
-                            flag2 = 1;
-                            System.out.println("Account was successfully edited!");
+                            if (!flag) {
+                                System.out.println("Account was not successfully edited.");
+                            } else {
+                                flag2 = 1;
+                                System.out.println("Account was successfully edited!");
+                            }
                         }
                     } while (flag2 == 0);
                 }
@@ -935,24 +947,25 @@ public class NetworkClient {
     }
 
     private static boolean processServerInput() {
-        String stringInfo;
+        String stringInfo = "";
         Scanner scan = new Scanner(System.in);
         while(true) {
+
             stringInfo = netscan.nextLine();
-            //////System.out.println(stringInfo + "########33 from server");  ////////////////////////////we are printing here
+            ///System.out.println(stringInfo +"######## from server");  ////////////////////////////we are printing here
             String[] strArray = stringInfo.split("~");
             if (strArray[0].equals("028")) {
                 System.out.println(strArray[1]);
             } else if (strArray[0].equals("026")) {
                 System.out.println(strArray[1]);
                 String str = scan.nextLine();
-                netpw.write("111~" + str + "\n");
+                netpw.write(str + "\n");
                 netpw.flush();
             } else if (strArray[0].equals("030")) {
-                System.out.println(strArray[1]);
+                //System.out.println(strArray[1]);
                 return true;
             } else if (strArray[0].equals("032")) {
-                System.out.println(strArray[1]);
+                //System.out.println(strArray[1]);
                 return false;
             } else if (strArray[0].equals("034")) {
                 String[] splitted = strArray[1].split("@");
@@ -960,12 +973,26 @@ public class NetworkClient {
                 for (String each: splitted) {
                     arrayList.add(each);
                 }
+                for (String each: arrayList) {
+                    System.out.println(each);
+                }
                 returnedArrayList = arrayList;
             } else if (strArray[0].equals("036")) {
                 String[] splitted = strArray[1].split("@");
+                for (String each: splitted) {
+                    System.out.println(each);
+                }
                 returnedArray = splitted;
             } else if (strArray[0].equals("038")) {
                 returnedInt = Integer.parseInt(strArray[1]);
+            } else if (strArray[0].equals("040")) {
+                String[] splitted = strArray[1].split("@");
+                for (String each: splitted) {
+                    System.out.println(each);
+                }
+                String str = scan.nextLine();
+                netpw.write(str + "\n");
+                netpw.flush();
             }
         }
     }

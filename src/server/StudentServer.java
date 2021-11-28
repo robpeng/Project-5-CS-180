@@ -20,6 +20,8 @@ public class StudentServer {
 
     public void setUsername(String username) {
         this.username = username;
+        netpw.write("030~ Student username set is successful\n");
+        netpw.flush();
     }
     public void takeQuiz() {
         System.out.println("Entered take quiz method. !!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -28,7 +30,6 @@ public class StudentServer {
             netpw.flush();
             return;
         }
-        System.out.println("Entered take quiz method reached end of if loop. !!!!!!!!!!!!!!!!!!!!!!!!!!");
         String filename;
         File f;
         String course;
@@ -39,6 +40,7 @@ public class StudentServer {
             course = netscan.nextLine();
             File directoryPath = new File(course);
             String[] content = directoryPath.list();
+
             if (content != null) {
                 for (String contents : content) {
                     System.out.println(contents);
@@ -48,6 +50,7 @@ public class StudentServer {
             netpw.flush();
             filename = netscan.nextLine();
             f = new File(course, filename  + ".txt");
+            System.out.println(course + ": " + filename + " our print statment.");
             try {
                 fr = new FileReader(f);
             } catch (IOException e) {
@@ -76,7 +79,7 @@ public class StudentServer {
                     str = "";
                     continue;
                 }
-                str = str + nextLine + "\n";
+                str = str + nextLine + "@";
             } catch(IOException e) {
                 e.printStackTrace();
                 netpw.write("032~ Student server method finishes.\n");
@@ -90,7 +93,7 @@ public class StudentServer {
         String answersFileName;
         String answer;
         for (int i = 1; i <= questions.size(); i++) {
-            netpw.write("026~ " + questions.get(i-1) + "\n");
+            netpw.write("040~ " + questions.get(i-1) + "\n");
             netpw.flush();
             answer = netscan.nextLine();
             answersFileName = filename + this.username + "Q" + i + "answer";

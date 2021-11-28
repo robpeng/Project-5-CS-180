@@ -60,7 +60,7 @@ public class InteractServer {
         while (true) {
             try {
                 netString = netscan.nextLine();
-                //System.out.println(netString + "!!!!!!!! from client"); //////////////////////////////////////////////
+                ///System.out.println(netString + "!!!!!!!! from client"); //////////////////////////////////////////////
             } catch (NoSuchElementException e) {
                 System.out.println("Client stopped.");
                 return;
@@ -68,6 +68,7 @@ public class InteractServer {
             String[] split = netString.split("~");
             if (split[0].equals("001")) {
                 boolean condition = loginserver.addUsername(split[1]);
+                /*
                 if (condition == true) {
                     netpw.write("030~ New User\n");
                     netpw.flush();
@@ -75,8 +76,10 @@ public class InteractServer {
                     netpw.write("032~ User already exists\n");
                     netpw.flush();
                 }
+                 */
             } else if (split[0].equals("003")) {
                 boolean a = loginserver.alreadyUser(split[1], split[2]);
+                /*
                 if (a) {
                     netpw.write("030~ Login successful\n");
                     netpw.flush();
@@ -85,8 +88,10 @@ public class InteractServer {
                     netpw.write("032~ Login not successful\n");
                     netpw.flush();
                 }
+                */
             } else if (split[0].equals("005")) {
                 boolean a = loginserver.deleteUser(split[1], split[2]);
+                /*
                 if (a) {
                     netpw.write("030~ Deletion successful\n");
                     netpw.flush();
@@ -95,19 +100,35 @@ public class InteractServer {
                     netpw.write("032~ Deletion not successful\n");
                     netpw.flush();
                 }
+                */
+
             } else if (split[0].equals("007")) {
+                //System.out.println(split[1] + split[2] + "test printed by us.");
                 boolean a = loginserver.editUsername(split[1], split[2]);
+                if (a) {
+                    loginserver.editPassword(split[2], split[3]);
+                }
+                /*
                 if (a) {
                     loginserver.editPassword(split[2], split[3]);
                     netpw.write("030~ Account edit successful\n");
                     netpw.flush();
+                   ////
 
                 } else {
+                    //
                     netpw.write("032~ Account edit not successful\n");
                     netpw.flush();
+                   /// System.out.println("a is true, printed by us.");
                 }
+
+                 */
             } else if (split[0].equals("009")) {
                 boolean a = loginserver.addUsername(split[1]);
+                if (a) {
+                    loginserver.addPassword(split[2]);
+                }
+                /*
                 if (a) {
                     loginserver.addPassword(split[2]);
                     netpw.write("030~ Account creation successful\n");
@@ -117,10 +138,11 @@ public class InteractServer {
                     netpw.write("032~ Account creation not successful\n");
                     netpw.flush();
                 }
+                 */
             } else if (split[0].equals("011")) {
                 studentserver.setUsername(split[1]);
-                netpw.write("024~ Student username set is successful\n");
-                netpw.flush();
+                //netpw.write("024~ Student username set is successful\n");
+                //netpw.flush();
             }  else if (split[0].equals("051")) {
                 teacherserver.createCourse(split[1]);
             } else if (split[0].equals("053")) {
@@ -176,7 +198,12 @@ public class InteractServer {
                 ArrayList<String> arr = convertToArrayList(split[1]);
                 teacherserver.printIndividualAnswer(arr, Integer.parseInt(split[2]));
             } else if (split[0].equals("089")) {
-                ArrayList<Integer> arr = convertToIntArrayList(split[4]);
+                ArrayList<Integer> arr;
+                if (split.length == 5) {
+                    arr = convertToIntArrayList(split[4]);
+                } else {
+                    arr = null;
+                }
                 teacherserver.addPoints(split[1], (split[2]), Integer.parseInt(split[3]), arr);
             } else if (split[0].equals("091")) {
                 teacherserver.gradeStudent(split[1], (split[2]), split[3], split[4]);
@@ -250,13 +277,18 @@ public class InteractServer {
     public String[] returnFileNames(String str) {
         File file = new File(str);
         String[] contents = file.list();
-        String string = convertToString(contents);
+        if (contents != null) {
+            String string = convertToString(contents);
 
-        netpw.write("036~" + string + "\n");
-        netpw.flush();
+            netpw.write("036~" + string + "\n");
+            netpw.flush();
 
-        netpw.write("030~ Files exist.\n");
-        netpw.flush();
+            netpw.write("030~ Files exist.\n");
+            netpw.flush();
+        } else {
+            netpw.write("032~ Directory does not exist.\n");
+            netpw.flush();
+        }
         return contents;
     }
 
