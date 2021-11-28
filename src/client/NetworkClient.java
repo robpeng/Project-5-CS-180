@@ -622,7 +622,6 @@ public class NetworkClient {
                                                             "'finalanswers'.");
                                                     studentAnswerSheet = sc.nextLine();
 
-                                                    ////////////////////////////////////////////////
                                                     netpw.write("053~" + directoryPath + "/" + studentAnswerSheet
                                                             + ".txt" + "\n");
                                                     netpw.flush();
@@ -643,8 +642,9 @@ public class NetworkClient {
                                                 flag = processServerInput();
                                                 scores = returnedArrayList;
 
-                                                   /// scores = Teacher1.printQuiz(courseName, quizName);
-                                                 if (!flag) {
+                                                /// scores = Teacher1.printQuiz(courseName, quizName);
+
+                                                if (!flag) {
                                                     System.out.println("File not found.");
                                                     return;
                                                 }
@@ -656,18 +656,25 @@ public class NetworkClient {
                                                 studentAnswers = returnedArrayList;
 
 
-                                                    //studentAnswers = Teacher1.printAnswers(directoryPath,
-                                                            //studentAnswerSheet);
+                                                //studentAnswers = Teacher1.printAnswers(directoryPath,
+                                                //studentAnswerSheet);
+
                                                  if (!flag) {
                                                     System.out.println("File not found.");
                                                     return;
                                                 }
+
                                                 String str = convertToString(scores);
+
                                                 netpw.write("083~" + str + "\n");
                                                 netpw.flush();
                                                 flag = processServerInput();
-                                                int numQuestions = returnedInt;
+                                                int numQuestions = returnedInt + 1;
+
                                                 //int numQuestions = Teacher1.numQuestions(scores);
+
+
+
                                                 int counter = 0;
                                                 int indexOfBlank = 0;
                                                 int indexNewLine = 0;
