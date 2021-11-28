@@ -68,6 +68,7 @@ public class InteractServer {
             String[] split = netString.split("~");
             if (split[0].equals("001")) {
                 boolean condition = loginserver.addUsername(split[1]);
+                /*
                 if (condition == true) {
                     netpw.write("030~ New User\n");
                     netpw.flush();
@@ -75,8 +76,10 @@ public class InteractServer {
                     netpw.write("032~ User already exists\n");
                     netpw.flush();
                 }
+                 */
             } else if (split[0].equals("003")) {
                 boolean a = loginserver.alreadyUser(split[1], split[2]);
+                /*
                 if (a) {
                     netpw.write("030~ Login successful\n");
                     netpw.flush();
@@ -85,8 +88,10 @@ public class InteractServer {
                     netpw.write("032~ Login not successful\n");
                     netpw.flush();
                 }
+                */
             } else if (split[0].equals("005")) {
                 boolean a = loginserver.deleteUser(split[1], split[2]);
+                /*
                 if (a) {
                     netpw.write("030~ Deletion successful\n");
                     netpw.flush();
@@ -95,19 +100,35 @@ public class InteractServer {
                     netpw.write("032~ Deletion not successful\n");
                     netpw.flush();
                 }
+                */
+
             } else if (split[0].equals("007")) {
+                System.out.println(split[1] + split[2] + "test printed by us.");
                 boolean a = loginserver.editUsername(split[1], split[2]);
+                if (a) {
+                    loginserver.editPassword(split[2], split[3]);
+                }
+                /*
                 if (a) {
                     loginserver.editPassword(split[2], split[3]);
                     netpw.write("030~ Account edit successful\n");
                     netpw.flush();
+                   ////
 
                 } else {
+                    //
                     netpw.write("032~ Account edit not successful\n");
                     netpw.flush();
+                   /// System.out.println("a is true, printed by us.");
                 }
+
+                 */
             } else if (split[0].equals("009")) {
                 boolean a = loginserver.addUsername(split[1]);
+                if (a) {
+                    loginserver.addPassword(split[2]);
+                }
+                /*
                 if (a) {
                     loginserver.addPassword(split[2]);
                     netpw.write("030~ Account creation successful\n");
@@ -117,10 +138,11 @@ public class InteractServer {
                     netpw.write("032~ Account creation not successful\n");
                     netpw.flush();
                 }
+                 */
             } else if (split[0].equals("011")) {
                 studentserver.setUsername(split[1]);
-                netpw.write("024~ Student username set is successful\n");
-                netpw.flush();
+                //netpw.write("024~ Student username set is successful\n");
+                //netpw.flush();
             }  else if (split[0].equals("051")) {
                 teacherserver.createCourse(split[1]);
             } else if (split[0].equals("053")) {

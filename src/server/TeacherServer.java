@@ -31,7 +31,7 @@ public class TeacherServer {
                 //netpw.write("032~ Course could not be created.\n");
                 //netpw.flush();
             }
-
+            System.out.println("success!");
             if (success) {
                 netpw.write("030~ Course was successfully created!\n");
                 netpw.flush();

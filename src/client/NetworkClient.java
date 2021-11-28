@@ -613,9 +613,10 @@ public class NetworkClient {
                                                 String studentAnswerSheet;
                                                 while (true) {
                                                     System.out.println("What is the name of the student answer" +
-                                                            " sheet that you would like to grade?" +
+                                                            " sheet that you would like to grade? Do NOT include .txt in" +
+                                                            " the name." +
                                                             " Please select the answer sheet that contains " +
-                                                            "'finalanswers'");
+                                                            "'finalanswers'.");
                                                     studentAnswerSheet = sc.nextLine();
 
                                                     ////////////////////////////////////////////////
@@ -751,7 +752,6 @@ public class NetworkClient {
                                 }
                                 break;
                             } else if (teacherOrStudent.equalsIgnoreCase("student")) {
-
                                 netpw.write("011~" + username + "\n");
                                 netpw.flush();
                                 processServerInput();
@@ -878,11 +878,14 @@ public class NetworkClient {
 
                             netpw.write("007~" + username2 + "~" + newUserName  + "~" + newPassword + "\n");
                             netpw.flush();
-                            processServerInput();
-
+                            flag = processServerInput();
                             ////loginObj2.editPassword(newUserName, newPassword);
-                            flag2 = 1;
-                            System.out.println("Account was successfully edited!");
+                            if (!flag) {
+                                System.out.println("Account was not successfully edited.");
+                            } else {
+                                flag2 = 1;
+                                System.out.println("Account was successfully edited!");
+                            }
                         }
                     } while (flag2 == 0);
                 }
@@ -935,18 +938,19 @@ public class NetworkClient {
     }
 
     private static boolean processServerInput() {
-        String stringInfo;
+        String stringInfo = "";
         Scanner scan = new Scanner(System.in);
         while(true) {
+
             stringInfo = netscan.nextLine();
-            //////System.out.println(stringInfo + "########33 from server");  ////////////////////////////we are printing here
+            ///System.out.println(stringInfo +"######## from server");  ////////////////////////////we are printing here
             String[] strArray = stringInfo.split("~");
             if (strArray[0].equals("028")) {
                 System.out.println(strArray[1]);
             } else if (strArray[0].equals("026")) {
                 System.out.println(strArray[1]);
                 String str = scan.nextLine();
-                netpw.write("111~" + str + "\n");
+                netpw.write(str + "\n");
                 netpw.flush();
             } else if (strArray[0].equals("030")) {
                 System.out.println(strArray[1]);
@@ -966,6 +970,14 @@ public class NetworkClient {
                 returnedArray = splitted;
             } else if (strArray[0].equals("038")) {
                 returnedInt = Integer.parseInt(strArray[1]);
+            } else if (strArray[0].equals("040")) {
+                String[] splitted = strArray[1].split("@");
+                for (String each: splitted) {
+                    System.out.println(each);
+                }
+                String str = scan.nextLine();
+                netpw.write(str + "\n");
+                netpw.flush();
             }
         }
     }
