@@ -295,6 +295,7 @@ public class NetworkClient {
                                                                 String answer = sc.nextLine();
 
                                                                 String choices = "";
+
                                                                 for (int i = 0; i < answerChoices.size(); i++) {
                                                                     if (i == answerChoices.size() - 1) {
                                                                         choices = choices + answerChoices.get(i);
@@ -308,6 +309,8 @@ public class NetworkClient {
                                                                         + "~" + answerChoiceNumber +  "\n");
                                                                 netpw.flush();
                                                                 boolean flaglocal = processServerInput();
+
+                                                                answerChoices = returnedArrayList;
 
 
                                                                 // Teacher1.addAnswerChoice(courseName, quizName,
@@ -706,9 +709,8 @@ public class NetworkClient {
                                                             sc.nextLine();
                                                         }
                                                     } while (!finished);
-
+                                                    points.add(numPoints); //////////changed here
                                                     String str4 = convertIntsToString(points);
-
                                                     netpw.write("089~" + courseName + "~" + quizName + "~" +
                                                             numPoints + "~" +
                                                              str4 + "\n");
@@ -953,10 +955,10 @@ public class NetworkClient {
                 netpw.write(str + "\n");
                 netpw.flush();
             } else if (strArray[0].equals("030")) {
-                System.out.println(strArray[1]);
+                //System.out.println(strArray[1]);
                 return true;
             } else if (strArray[0].equals("032")) {
-                System.out.println(strArray[1]);
+                //System.out.println(strArray[1]);
                 return false;
             } else if (strArray[0].equals("034")) {
                 String[] splitted = strArray[1].split("@");
@@ -964,9 +966,15 @@ public class NetworkClient {
                 for (String each: splitted) {
                     arrayList.add(each);
                 }
+                for (String each: arrayList) {
+                    System.out.println(each);
+                }
                 returnedArrayList = arrayList;
             } else if (strArray[0].equals("036")) {
                 String[] splitted = strArray[1].split("@");
+                for (String each: splitted) {
+                    System.out.println(each);
+                }
                 returnedArray = splitted;
             } else if (strArray[0].equals("038")) {
                 returnedInt = Integer.parseInt(strArray[1]);

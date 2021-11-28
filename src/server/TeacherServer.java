@@ -31,7 +31,7 @@ public class TeacherServer {
                 //netpw.write("032~ Course could not be created.\n");
                 //netpw.flush();
             }
-            System.out.println("success!");
+            //System.out.println("success!");
             if (success) {
                 netpw.write("030~ Course was successfully created!\n");
                 netpw.flush();
@@ -113,6 +113,21 @@ public class TeacherServer {
         PrintWriter pw = new PrintWriter(fos);
         pw.println(answerFormat);
         pw.close();
+
+        String choices = "";
+        for (int i = 0; i < answerChoices.size(); i++) {
+            if (!answerChoices.get(i).equals("")) {
+                if (i == answerChoices.size() - 1) {
+                    choices = choices + answerChoices.get(i);
+                    break;
+                }
+                choices = choices + answerChoices.get(i) + "@";
+            }
+        }
+
+
+        netpw.write("034~" + choices + "\n");
+        netpw.flush();
 
         netpw.write("030~ Answer choice " + answerChoiceNumber + " has successfully been added!\n");
         netpw.flush();
@@ -212,7 +227,7 @@ public class TeacherServer {
         netpw.write("034~" + choices + "\n");
         netpw.flush();
 
-        netpw.write("030~ " + "\n");
+        netpw.write("030~ displayQuizlinenumbers" + "\n");
         netpw.flush();
         return quiz1;
     }
@@ -287,7 +302,7 @@ public class TeacherServer {
         netpw.write("034~ " + str + "\n");
         netpw.flush();
 
-        netpw.write("030~ " +  "\n");
+        netpw.write("030~ displaylinesforanswersheeet " +  "\n");
         netpw.flush();
         return answerSheet1;
     }
@@ -350,7 +365,7 @@ public class TeacherServer {
         netpw.write("034~" + str2 + "\n");
         netpw.flush();
 
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success  print quiz\n");
         netpw.flush();
         return scores;
     }
@@ -365,7 +380,7 @@ public class TeacherServer {
         netpw.write("038~" + counter + "\n");
         netpw.flush();
 
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success  numQuestions\n");
         netpw.flush();
         return counter;
     }
@@ -373,7 +388,7 @@ public class TeacherServer {
     public int printIndividualQuestion(ArrayList<String> scores, int indexOfBlank) {
         int j = 0;
         for (j = indexOfBlank; j < scores.size(); j++) {
-            System.out.println(scores.get(j));
+            //System.out.println(scores.get(j));
             indexOfBlank++;
             if (scores.get(j).equals("")) {
                 j = indexOfBlank;
@@ -383,12 +398,15 @@ public class TeacherServer {
         netpw.write("038~" + j + "\n");
         netpw.flush();
 
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success printIndividualQuestion\n");
         netpw.flush();
         return j;
     }
 
     public void addPoints(String courseName, String quizName, int numPoints, ArrayList<Integer> points) {
+        if (points == null) {
+            points = new ArrayList<>();
+        }
         points.add(numPoints);
         File f2 = new File(courseName, quizName + "points.txt");
         FileOutputStream fos2;
@@ -404,7 +422,7 @@ public class TeacherServer {
             pw2.println(s);
         }
         pw2.close();
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success  addpoints\n");
         netpw.flush();
     }
 
@@ -557,6 +575,7 @@ public class TeacherServer {
         pw2.println("Student Grading Report: ");
         pw2.println();
         for (int i = 0; i < answers.size(); i++) {
+        //for (int i = 0; i < points.size(); i++) {
             if (answers.get(i).equals(studentAnswers.get(i))) {
                 score = score + points.get(i);
                 pw2.println("Student got this question correct!");
@@ -577,7 +596,7 @@ public class TeacherServer {
         }
         pw2.println("Total Score: " + score + "/" + total);
         pw2.close();
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success grade student\n");
         netpw.flush();
     }
 
@@ -616,7 +635,7 @@ public class TeacherServer {
             netpw.write("028~ " + studentAnswer + "\n");
             netpw.flush();
         }
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success viewStudentSubmission\n");
         netpw.flush();
         return f;
     }
@@ -658,7 +677,7 @@ public class TeacherServer {
         netpw.write("034~" + str2 + "\n");
         netpw.flush();
 
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success printAnswers\n");
         netpw.flush();
         return studentAnswers;
     }
@@ -674,7 +693,7 @@ public class TeacherServer {
         }
         netpw.write("038~" + i + "\n");
         netpw.flush();
-        netpw.write("030~ Success\n");
+        netpw.write("030~ Success Print indiv answer\n");
         netpw.flush();
         return i;
     }
