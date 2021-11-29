@@ -18,7 +18,7 @@
 |------|------|
 |public ExistingUser (String message)|Constructor that super message from the Exception class.|
 
-## Login.java
+## LoginServer.java
 
 - This class deals with the login feature of our program.
 
@@ -49,15 +49,8 @@ private String|password|password created by a user|
 |public void editUsername(String username, String newUsername)|used when users want to edit their username|
 |public void editPassword(String password, String newPassword)|used when users want to edit their password|
 
-## Question.java
 
-- This class has a method that randomizes the question order in the question file.
-
-|Method|Description|
-|------|------|
-|public static void randomizedQuestions()|reads the question file and shuffles the order of the questions.|
-
-## Student.java
+## StudentServer.java
 
 - This class deals with student interaction with the program.
 
@@ -76,7 +69,7 @@ private String|password|password created by a user|
 |public void viewGradedQuiz(Scanner scanner)|student can view any graded quiz|
 |public void takeQuizViaUpload(Scanner scanner)|student can upload their answer file to any courses|
 
-## Teacher.java
+## TeacherServer.java
 
 - This class deals with teacher interaction with the program.
 
