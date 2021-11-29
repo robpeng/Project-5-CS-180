@@ -11,9 +11,6 @@
 - Our program can be run by a Main.java. All the implementation is done in that class. Expected inputs and outputs are attached at the end of this document. 
  
 
-## ExistingUser.java
-
-- This is a custom exception class for existing users.
 
 - Constructor Summary
 
