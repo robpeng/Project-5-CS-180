@@ -1,0 +1,443 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.ArrayList;
+
+public class Teacher extends JComponent implements Runnable {
+
+        JButton createCourse;
+        JButton viewStudentSubmissions;
+        JButton gradeStudent;
+        JButton addQuiz;
+        JButton deleteQuiz;
+        JButton addQuestion;
+        JButton removeQuestion;
+
+        Teacher teacher;
+
+        JFrame frame;
+
+        final ActionListener actionListener = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                        String courseName = null;
+                        String quizName = null;
+                        File courseName1 = null;
+                        if (e.getSource() == createCourse) {
+                                courseName = JOptionPane.showInputDialog(null, "Please enter the name of the course that you would like to create", "Create Course", JOptionPane.QUESTION_MESSAGE);
+                                if (courseName == null) {
+                                        return;
+                                }
+                                if (new File(courseName).exists()) {
+                                        JOptionPane.showMessageDialog(null, "This course already exists, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                                } else {
+                                        Teacher1.createCourse(courseName);
+                                        JOptionPane.showMessageDialog(null, "Course was successfully created!", "Create Course", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                        }
+                        if (e.getSource() == viewStudentSubmissions) {
+                                File directoryPath = new File("Student Submissions");
+                                String[] studentSubmissions = directoryPath.list();
+                                assert studentSubmissions != null;
+                                String studentSubmissionName = (String) JOptionPane.showInputDialog(null, "Please select the student submission that you would like to view", "View Student Submission", JOptionPane.QUESTION_MESSAGE, null, studentSubmissions, studentSubmissions[0]);
+                                if (studentSubmissionName == null) {
+                                        return;
+                                }
+                                File f;
+                                ArrayList<String> studentAnswers = null;
+                                try {
+                                        studentAnswers = Teacher1.viewStudentSubmission(directoryPath, studentSubmissionName);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                                String output = "";
+                                for (int i = 0; i < studentAnswers.size(); i++) {
+                                        String studentAnswers1 = studentAnswers.get(i).toString();
+                                        output += studentAnswers1 + "\n";
+                                }
+                                JOptionPane.showMessageDialog(null, output);
+                        }
+                        if (e.getSource() == gradeStudent) {
+                                File directoryPath = new File("Student Submissions");
+                                String[] studentSubmissions = directoryPath.list();
+                                assert studentSubmissions != null;
+                                String studentSubmissionName = (String) JOptionPane.showInputDialog(null, "Please select the student answer sheet that you would like to grade, select the answer sheet with finalanswers", "Grade Student", JOptionPane.QUESTION_MESSAGE, null, studentSubmissions, studentSubmissions[0]);
+                                if (studentSubmissionName == null) {
+                                        return;
+                                }
+                                while (true) {
+                                        courseName = JOptionPane.showInputDialog(null, "Please enter the name of the course that you would like to grade", "Grade Student", JOptionPane.QUESTION_MESSAGE);
+                                        if (courseName == null) {
+                                                return;
+                                        }
+                                        if (new File(courseName).exists()) {
+                                                break;
+                                        } else {
+                                                JOptionPane.showMessageDialog(null, "This course does not exist, please try again!", "Grade Student", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                }
+                                File directoryPath1 = new File(courseName);
+                                String[] quizList = directoryPath1.list();
+                                assert  quizList != null;
+                                while (true) {
+                                        quizName = (String) JOptionPane.showInputDialog(null, "Please select the quiz that you would like to grade", "Grade Student", JOptionPane.QUESTION_MESSAGE, null, quizList, quizList[0]);
+                                        if (quizName == null) {
+                                                return;
+                                        }
+                                        if (quizName.contains("point") || quizName.contains("answer")) {
+                                                JOptionPane.showMessageDialog(null, "The selection you made is not a valid quiz, please choose another option!", "Grade Student", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                        else {
+                                                break;
+                                        }
+                                }
+                                courseName1 = new File(courseName);
+                                ArrayList<String> scores = null;
+                                try {
+                                        scores = Teacher1.printQuiz(courseName1, quizName);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                                ArrayList<String> studentAnswers = null;
+                                try {
+                                        studentAnswers = Teacher1.printAnswers(directoryPath, studentSubmissionName);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                                int numQuestions = Teacher1.numQuestions(scores);
+                                int counter = 0;
+                                int indexOfBlank = 0;
+                                int indexNewLine = 0;
+                                ArrayList<Integer> points = new ArrayList<>();
+                                String[] pointsString = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+                                while (counter < numQuestions) {
+                                        int j = Teacher1.printIndividualQuestion1(scores, indexOfBlank);
+                                        assert studentAnswers != null;
+                                        int i = Teacher1.printIndividualAnswer1(studentAnswers, indexNewLine);
+                                        String output = Teacher1.printIndividualQuestion(scores, indexOfBlank);
+                                        String output1 = Teacher1.printIndividualAnswer(studentAnswers, indexNewLine);
+                                        String numPoints1 = (String) JOptionPane.showInputDialog(null, output + "Student Answer" + "\n" + output1 + "How many points would you like to assign to this question?", "Grade Student", JOptionPane.QUESTION_MESSAGE, null, pointsString, pointsString[0]);
+                                        if (numPoints1 == null) {
+                                                return;
+                                        }
+                                        int numPoints = Integer.parseInt(numPoints1);
+                                        try {
+                                                Teacher1.addPoints(courseName1, quizName, numPoints, points);
+                                        } catch (FileNotFoundException ex) {
+                                                ex.printStackTrace();
+                                        }
+                                        counter++;
+                                        indexOfBlank = j;
+                                        indexNewLine = i;
+                                }
+                                try {
+                                        Teacher1.gradeStudent(courseName1, directoryPath, quizName, studentSubmissionName);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                        }
+                        if (e.getSource() == addQuiz) {
+                                while (true) {
+                                        courseName = JOptionPane.showInputDialog(null, "What is the name of the course that you would like to add this quiz to", "Add Quiz", JOptionPane.QUESTION_MESSAGE);
+                                        if (courseName == null) {
+                                                return;
+                                        }
+                                        if (new File(courseName).exists()) {
+                                                break;
+                                        } else {
+                                                JOptionPane.showMessageDialog(null, "This course does not exist, please try again!", "Add Quiz", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                }
+                                courseName1 = new File(courseName);
+                                quizName = JOptionPane.showInputDialog(null, "What is the name of the quiz that you would like to create", "Add Quiz", JOptionPane.QUESTION_MESSAGE);
+                                if (quizName == null) {
+                                        return;
+                                }
+                                String quiz = Teacher1.createQuiz(courseName1, quizName);
+                                if (quiz.equals("Quiz was not successfully created.")) {
+                                        JOptionPane.showMessageDialog(null, "This quiz already exists, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                                } else {
+                                        Teacher1.createQuiz(courseName1, quizName + "points");
+                                        JOptionPane.showMessageDialog(null, "This quiz has successfully been created!", "Add Quiz", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                        }
+                        if (e.getSource() == deleteQuiz) {
+                                while (true) {
+                                        courseName = JOptionPane.showInputDialog(null, "What course would the quiz that you want to delete be located under?", "Delete Quiz", JOptionPane.QUESTION_MESSAGE);
+                                        if (courseName == null) {
+                                                return;
+                                        }
+                                        if (new File(courseName).exists()) {
+                                                break;
+                                        } else {
+                                                JOptionPane.showMessageDialog(null, "This course does not exist, please try again!", "Delete Quiz", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                }
+                                File directoryPath1 = new File(courseName);
+                                String[] quizList = directoryPath1.list();
+                                courseName1 = new File(courseName);
+                                while (true) {
+                                        assert quizList != null;
+                                        quizName = (String) JOptionPane.showInputDialog(null, "Please select the quiz that you would like to delete", "Delete Quiz", JOptionPane.QUESTION_MESSAGE, null, quizList, quizList[0]);
+                                        if (quizName == null) {
+                                                return;
+                                        }
+                                        if (quizName.contains("point") || quizName.contains("answer")) {
+                                                JOptionPane.showMessageDialog(null, "This selection is not a valid quiz to delete, please try again!", "Delete Quiz", JOptionPane.ERROR_MESSAGE);
+                                        } else {
+                                                break;
+                                        }
+                                }
+                                String quiz = Teacher1.deleteQuiz(courseName1, quizName);
+                                if (quiz.equals("The quiz " + quizName + " was unable to be deleted")) {
+                                        JOptionPane.showMessageDialog(null, "This quiz does not exist, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                                } else {
+                                        Teacher1.deleteQuiz(courseName1, quizName + "points");
+                                        Teacher1.deleteQuiz(courseName1, quizName + "answersheet");
+                                        JOptionPane.showMessageDialog(null, "This quiz has successfully been deleted!", "Delete Quiz", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                        }
+                        if (e.getSource() == addQuestion) {
+                                int yesOrNo = 0;
+                                while (true) {
+                                        courseName = JOptionPane.showInputDialog(null, "What course would you like to edit a quiz for", "Add Question", JOptionPane.QUESTION_MESSAGE);
+                                        if (courseName == null) {
+                                                return;
+                                        }
+                                        if (new File(courseName).exists()) {
+                                                break;
+                                        } else {
+                                                JOptionPane.showMessageDialog(null, "This course does not exist, please try again!", "Add Question", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                }
+                                File directoryPath1 = new File(courseName);
+                                String[] quizList = directoryPath1.list();
+                                courseName1 = new File(courseName);
+                                while (true) {
+                                        assert quizList != null;
+                                        quizName = (String) JOptionPane.showInputDialog(null, "Please select the quiz that you would like to add a question to", "Add Question", JOptionPane.QUESTION_MESSAGE, null, quizList, quizList[0]);
+                                        if (quizName == null) {
+                                                return;
+                                        }
+                                        if (quizName.contains("point") || quizName.contains("answer")) {
+                                                JOptionPane.showMessageDialog(null, "This selection is not a valid quiz to edit, please try again!", "Add Question", JOptionPane.ERROR_MESSAGE);
+                                        } else {
+                                                break;
+                                        }
+                                }
+                                while (yesOrNo == 0) {
+                                        String question = "";
+                                        while (true) {
+                                                question = JOptionPane.showInputDialog(null, "Type out the question that you would like to add (minus the answer choices)", "Add Question", JOptionPane.QUESTION_MESSAGE);
+                                                if (question == null) {
+                                                        JOptionPane.showMessageDialog(null, "Please finish completing the question before exiting out of the program", "Add Question", JOptionPane.ERROR_MESSAGE);
+                                                } else {
+                                                        break;
+                                                }
+                                        }
+                                        try {
+                                                Teacher1.addQuestionTitle(courseName1, quizName, question);
+                                        } catch (FileNotFoundException ex) {
+                                                ex.printStackTrace();
+                                        }
+                                        String[] numOptions = {"1", "2", "3", "4", "5"};
+                                        String numAnswerChoices1;
+                                        while (true) {
+                                                numAnswerChoices1 = String.valueOf(JOptionPane.showInputDialog(null, "How many answer choices would you like this question to have?", "Add Question", JOptionPane.QUESTION_MESSAGE, null, numOptions, numOptions[0]));
+                                                if (numAnswerChoices1 == null) {
+                                                        JOptionPane.showMessageDialog(null, "Please finish completing the question before exiting out of the program", "Add Question", JOptionPane.ERROR_MESSAGE);
+                                                } else {
+                                                        break;
+                                                }
+                                        }
+                                        int numAnswerChoices = Integer.parseInt(numAnswerChoices1);
+                                        int answerChoiceNumber = 1;
+                                        ArrayList<String> answerChoices = new ArrayList<>();
+                                        while (answerChoiceNumber <= numAnswerChoices) {
+                                                String s = String.valueOf(Character.toChars(answerChoiceNumber + 64));
+                                                String choice;
+                                                while (true) {
+                                                        choice = JOptionPane.showInputDialog(null, "Please enter the answer choice for option number " + answerChoiceNumber, "Answer Choice " + answerChoiceNumber, JOptionPane.QUESTION_MESSAGE);
+                                                        if (choice == null) {
+                                                                JOptionPane.showMessageDialog(null, "Please finish completing the question before exiting out of the program", "Add Question", JOptionPane.ERROR_MESSAGE);
+                                                        } else {
+                                                                break;
+                                                        }
+                                                }
+                                                answerChoices.add(s + ") " + choice);
+                                                try {
+                                                        Teacher1.addAnswerChoice(courseName1, quizName, choice, answerChoices, answerChoiceNumber);
+                                                } catch (FileNotFoundException ex) {
+                                                        ex.printStackTrace();
+                                                }
+                                                answerChoices.remove(answerChoiceNumber);
+                                                answerChoiceNumber++;
+                                        }
+                                        try {
+                                                Teacher1.addSpace(courseName1, quizName);
+                                        } catch (FileNotFoundException ex) {
+                                                ex.printStackTrace();
+                                        }
+                                        String[] answerChoices1 = answerChoices.toArray(new String[0]);
+                                        String correctAnswer;
+                                        while (true) {
+                                                correctAnswer = (String) JOptionPane.showInputDialog(null, "Please select the correct answer", "Correct Answer", JOptionPane.QUESTION_MESSAGE, null, answerChoices1, answerChoices1[0]);
+                                                if (correctAnswer == null) {
+                                                        JOptionPane.showMessageDialog(null, "Please finish completing the question before exiting out of the program", "Add Question", JOptionPane.ERROR_MESSAGE);
+                                                } else {
+                                                        break;
+                                                }
+                                        }
+                                        char charCorrectAnswer = correctAnswer.charAt(0);
+                                        int correctAnswerNumber = ((int) charCorrectAnswer) - 64;
+                                        try {
+                                                Teacher1.chooseCorrectAnswer(courseName1, quizName, correctAnswerNumber, answerChoices);
+                                        } catch (FileNotFoundException ex) {
+                                                ex.printStackTrace();
+                                        }
+
+                                        yesOrNo = JOptionPane.showConfirmDialog(null, "Would you like to add another question to this quiz?", "Add Question", JOptionPane.YES_NO_OPTION);
+                                        if (yesOrNo != 0) {
+                                                return;
+                                        }
+                                }
+                        }
+                        if (e.getSource() == removeQuestion) {
+                                String[] quiz1 = new String[0];
+                                ArrayList<String> quiz = null;
+                                while (true) {
+                                        courseName = JOptionPane.showInputDialog(null, "What course contains the quiz that you would like to edit", "Remove Question", JOptionPane.QUESTION_MESSAGE);
+                                        if (courseName == null) {
+                                                return;
+                                        }
+                                        if (new File(courseName).exists()) {
+                                                break;
+                                        } else {
+                                                JOptionPane.showMessageDialog(null, "This course does not exist, please try again!", "Remove Question", JOptionPane.ERROR_MESSAGE);
+                                        }
+                                }
+                                courseName1 = new File(courseName);
+                                File directoryPath1 = new File(courseName);
+                                String[] quizList = directoryPath1.list();
+                                while (true) {
+                                        assert quizList != null;
+                                        quizName = (String) JOptionPane.showInputDialog(null, "Please select the quiz that you would like to remove a question from", "Remove Question Question", JOptionPane.QUESTION_MESSAGE, null, quizList, quizList[0]);
+                                        if (quizName == null) {
+                                                return;
+                                        }
+                                        if (quizName.contains("point") || quizName.contains("answer")) {
+                                                JOptionPane.showMessageDialog(null, "This selection is not a valid quiz to edit, please try again!", "Remove Question", JOptionPane.ERROR_MESSAGE);
+                                        } else {
+                                                break;
+                                        }
+                                }
+                                try {
+                                        quiz = Teacher1.displayQuizLineNumbers(courseName1, quizName);
+                                        quiz1 = quiz.toArray(new String[0]);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                                for (int i = 0; i < quiz1.length; i++) {
+                                        quiz1[i] = i + ": " + quiz1[i];
+                                }
+                                String option = "";
+                                for (int i = 0; i < quiz.size(); i++) {
+                                        String everything = quiz.get(i).toString();
+                                        option += everything + "\n";
+                                }
+                                String lineOne = (String) JOptionPane.showInputDialog(null, "Please select the first line of the question that you would like to delete", "Remove Question", JOptionPane.QUESTION_MESSAGE, null, quiz1, quiz1[0]);
+                                if (lineOne == null) {
+                                        return;
+                                }
+                                int line1 = Integer.parseInt(lineOne.substring(0, 1));
+                                String lineTwo = (String) JOptionPane.showInputDialog(null, "Please select the blank line at the end of the question that you would like to delete", "Remove Question", JOptionPane.QUESTION_MESSAGE, null, quiz1, quiz1[0]);
+                                if (lineTwo == null) {
+                                        return;
+                                }
+                                int line2 = Integer.parseInt(lineTwo.substring(0, 1));
+                                try {
+                                        Teacher1.removeQuestion(line1, line2, quiz, courseName1, quizName);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+
+                                ArrayList<String> answerSheet = null;
+                                String[] answerSheet1 = new String[0];
+                                try {
+                                        answerSheet = Teacher1.displayLinesForAnswerSheet(courseName1, quizName);
+                                        answerSheet1 = answerSheet.toArray(new String[0]);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                                for (int i = 0; i < answerSheet1.length; i++) {
+                                        answerSheet1[i] = i + ": " + answerSheet1[i];
+                                }
+                                String line;
+                                while (true) {
+                                        line = (String) JOptionPane.showInputDialog(null, "Please select the answer to the question that you removed" + option, "Remove Question", JOptionPane.QUESTION_MESSAGE, null, answerSheet1, answerSheet1[0]);
+                                        if (line == null) {
+                                                JOptionPane.showMessageDialog(null, "Please finish completely removing the question before exiting the program", "Remove Question", JOptionPane.ERROR_MESSAGE);
+                                        } else {
+                                                break;
+                                        }
+                                }
+                                int intLine = Integer.parseInt(line.substring(0, 1));
+                                try {
+                                        Teacher1.removeAnswerFromAnswerSheet(courseName1, quizName, answerSheet, intLine);
+                                } catch (FileNotFoundException ex) {
+                                        ex.printStackTrace();
+                                }
+                        }
+                }
+        };
+
+        @Override
+        public void run() {
+                frame = new JFrame("Teacher Actions");
+
+                Container content = frame.getContentPane();
+                content.setLayout(new BorderLayout());
+                teacher = new Teacher();
+                content.add(teacher, BorderLayout.CENTER);
+                content.add(teacher);
+
+                frame.setSize(400, 135);
+                frame.setLocationRelativeTo(null);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setVisible(true);
+
+                createCourse = new JButton("Create Course");
+                createCourse.addActionListener(actionListener);
+                viewStudentSubmissions = new JButton("View Student Submissions");
+                viewStudentSubmissions.addActionListener(actionListener);
+                gradeStudent = new JButton("Grade Student");
+                gradeStudent.addActionListener(actionListener);
+                addQuiz = new JButton("Add Quiz");
+                addQuiz.addActionListener(actionListener);
+                deleteQuiz = new JButton("Delete Quiz");
+                deleteQuiz.addActionListener(actionListener);
+                addQuestion = new JButton("Add Question");
+                addQuestion.addActionListener(actionListener);
+                removeQuestion = new JButton("Remove Question");
+                removeQuestion.addActionListener(actionListener);
+
+                JPanel panel = new JPanel();
+
+                panel.add(createCourse);
+                panel.add(viewStudentSubmissions);
+                panel.add(gradeStudent);
+                panel.add(addQuiz);
+                panel.add(deleteQuiz);
+                panel.add(addQuestion);
+                panel.add(removeQuestion);
+
+
+                content.add(panel, BorderLayout.CENTER);
+        }
+
+        public static void main(String[] args) {
+                SwingUtilities.invokeLater(new Teacher());
+        }
+}
