@@ -1,0 +1,635 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.io.*;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.lang.*;
+
+public class Teacher1 {
+
+    Scanner netscan = null;
+    PrintWriter netpw = null;
+
+    public void setScanner(Scanner netscan) {
+        this.netscan = netscan;
+    }
+
+    public void setPrintWriter(PrintWriter netpw) {
+        this.netpw = netpw;
+    }
+
+    public static File createCourse(String courseName) {
+
+        boolean success = false;
+
+        File directory = new File(courseName);
+
+        success = directory.mkdir();
+
+        return directory;
+    }
+
+    public static String createQuiz(File courseName, String quizName) {
+
+        boolean success = false;
+
+        File f = new File(courseName, quizName + ".txt");
+        try {
+            success = f.createNewFile();
+        } catch (IOException e) {
+            return "Quiz could not be created.";
+        }
+
+        if (success) {
+            return "Quiz was successfully created!";
+        } else {
+            return "Quiz was not successfully created.";
+        }
+    }
+
+    public static String deleteQuiz(File courseName, String quizName) {
+        quizName = quizName.replaceAll(".txt", "");
+        File f = new File(courseName, quizName + ".txt");
+        if (f.delete()) {
+            return "The quiz " + quizName + " has successfully been deleted";
+        } else {
+            return "The quiz " + quizName + " was unable to be deleted";
+        }
+    }
+
+    public static void addQuestionTitle(File courseName, String quizName, String question)
+            throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        File f = new File(courseName, quizName + ".txt");
+        FileOutputStream fos = new FileOutputStream(f, true);
+        PrintWriter pw = new PrintWriter(fos);
+        pw.println(question);
+        pw.close();
+    }
+    //* put question above this before the number of answer choices print out
+    //* this will need to be put in a for loop and ask the user how many answer choices they want to add, the index i will equal the answer choice number
+    public static ArrayList<String> addAnswerChoice(File courseName, String quizName, String answer,
+                                                    ArrayList<String> answerChoices, int answerChoiceNumber)
+            throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        answerChoices.add(answer);
+        String s = String.valueOf(Character.toChars(answerChoiceNumber + 64));
+        String answerFormat = s + ") " + answer;
+
+        File f = new File(courseName, quizName + ".txt");
+        FileOutputStream fos = new FileOutputStream(f, true);
+        PrintWriter pw = new PrintWriter(fos);
+        pw.println(answerFormat);
+        pw.close();
+        return answerChoices;
+    }
+
+    public static void addSpace(File courseName, String quizName) throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        File f = new File(courseName, quizName + ".txt");
+        FileOutputStream fos = new FileOutputStream(f, true);
+        PrintWriter pw = new PrintWriter(fos);
+        pw.println();
+        pw.close();
+    }
+
+    // in the main method, System.out.println("Which answer choice is the correct answer? 1 is A, 2 is B, etc...");
+    // have this method called right after the for loop for writing out a question
+    public static void chooseCorrectAnswer(File courseName, String quizName, int correctAnswer, ArrayList<String>
+            answerChoices) throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        String s = String.valueOf(Character.toChars(correctAnswer + 64));
+        String correct = answerChoices.get(correctAnswer - 1);
+        File f1 = new File(courseName, quizName + "answersheet.txt");
+        FileOutputStream fos1 = new FileOutputStream(f1, true);
+        PrintWriter pw1 = new PrintWriter(fos1);
+        pw1.println(s + ") " + correct);
+        pw1.close();
+    }
+
+    public static ArrayList<String> displayQuizLineNumbers(File courseName, String quizName)
+            throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        ArrayList<String> quiz1 = new ArrayList<>();
+        File f = new File(courseName, quizName + ".txt");
+        FileReader fr = new FileReader(f);
+        BufferedReader bfr = new BufferedReader(fr);
+        String line = null;
+        try {
+            line = bfr.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line != null) {
+            quiz1.add(line);
+            try {
+                line = bfr.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return quiz1;
+    }
+
+    // ask the user to enter the number of the first line and the number to the left of the blank line at the end of
+    // the question
+    // use the returned arraylist from the displayLineNumbers method
+    public static void removeQuestion(int firstLine, int secondLine, ArrayList<String> quiz, File courseName,
+                                      String quizName) throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        secondLine = secondLine + 1;
+        quiz.subList(firstLine, secondLine).clear();
+        File fNew = new File(courseName, quizName + ".txt");
+        FileOutputStream fos = new FileOutputStream(fNew);
+        PrintWriter pw = new PrintWriter(fos);
+        for (String s : quiz) {
+            pw.println(s);
+        }
+        pw.close();
+    }
+
+    public static ArrayList<String> displayLinesForAnswerSheet(File courseName, String quizName)
+            throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        ArrayList<String> answerSheet1 = new ArrayList<>();
+        File f1 = new File(courseName, quizName + "answersheet.txt");
+        FileReader fr1 = new FileReader(f1);
+        BufferedReader bfr1 = new BufferedReader(fr1);
+        String line1 = null;
+        try {
+            line1 = bfr1.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line1 != null) {
+            answerSheet1.add(line1);
+            try {
+                line1 = bfr1.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr1.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return answerSheet1;
+    }
+
+    public static void removeAnswerFromAnswerSheet(File courseName, String quizName, ArrayList<String> answerSheet,
+                                                   int lineNumber) throws FileNotFoundException {
+        quizName = quizName.replaceAll(".txt", "");
+        answerSheet.remove(lineNumber);
+        File f2 = new File(courseName, quizName + "answersheet.txt");
+        FileOutputStream fos2 = new FileOutputStream(f2);
+        PrintWriter pw2 = new PrintWriter(fos2);
+        for (String s : answerSheet) {
+            pw2.println(s);
+        }
+        pw2.close();
+    }
+
+    public static ArrayList<String> printQuiz(File courseName, String quizName) throws FileNotFoundException {
+        ArrayList<String> scores = new ArrayList<>();
+        quizName = quizName.replaceAll(".txt", "");
+        File f2 = new File(courseName, quizName + ".txt");
+        FileReader fr2 = new FileReader(f2);
+        BufferedReader bfr2 = new BufferedReader(fr2);
+        String line2 = null;
+        try {
+            line2 = bfr2.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line2 != null) {
+            scores.add(line2);
+            try {
+                line2 = bfr2.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return scores;
+    }
+
+    public static int numQuestions(ArrayList<String> scores) {
+        int counter = 0;
+        for (String score : scores) {
+            if (score.equals("")) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    public static String printIndividualQuestion(ArrayList<String> scores, int indexOfBlank) {
+        int j = 0;
+        String output = "";
+        for (j = indexOfBlank; j < scores.size(); j++) {
+            String everything = scores.get(j).toString();
+            output += everything + "\n";
+            indexOfBlank++;
+            if (scores.get(j).equals("")) {
+                j = indexOfBlank;
+                break;
+            }
+        }
+        return output;
+    }
+
+    public static int printIndividualQuestion1(ArrayList<String> scores, int indexOfBlank) {
+        int j = 0;
+        for (j = indexOfBlank; j < scores.size(); j++) {
+            indexOfBlank++;
+            if (scores.get(j).equals("")) {
+                j = indexOfBlank;
+                break;
+            }
+        }
+        return j;
+    }
+
+    public static void addPoints(File courseName, String quizName, int numPoints, ArrayList<Integer> points)
+            throws FileNotFoundException {
+        points.add(numPoints);
+        quizName = quizName.replaceAll(".txt", "");
+        File f2 = new File(courseName, quizName + "points.txt");
+        FileOutputStream fos2 = new FileOutputStream(f2);
+        PrintWriter pw2 = new PrintWriter(fos2);
+        for (Integer s : points) {
+            pw2.println(s);
+        }
+        pw2.close();
+    }
+
+    public static void gradeStudent(File courseName, File studentSubmissions, String quizName,
+                                    String studentAnswerSheet) throws FileNotFoundException {
+        ArrayList<Integer> points = new ArrayList<>();
+        quizName = quizName.replaceAll(".txt", "");
+        studentAnswerSheet = studentAnswerSheet.replaceAll(".txt", "");
+        File f5 = new File(courseName, quizName + "points.txt");
+        FileReader fr5 = new FileReader(f5);
+        BufferedReader bfr5 = new BufferedReader(fr5);
+        String line5 = null;
+        try {
+            line5 = bfr5.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line5 != null) {
+            points.add(Integer.valueOf(line5));
+            try {
+                line5 = bfr5.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr5.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (points.isEmpty()) {
+            System.out.println("Points have not been assigned to this quiz yet, " +
+                    "please choose option 6 to assign points");
+            return;
+        }
+        ArrayList<String> answers = new ArrayList<>();
+        ArrayList<String> studentAnswers = new ArrayList<>();
+        File f1 = new File(courseName, quizName + "answersheet.txt");
+        FileReader fr1 = new FileReader(f1);
+        BufferedReader bfr1 = new BufferedReader(fr1);
+        String line1 = null;
+        try {
+            line1 = bfr1.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line1 != null) {
+            answers.add(line1.toLowerCase().substring(0, 1));
+            try {
+                line1 = bfr1.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr1.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File f = new File(studentSubmissions, studentAnswerSheet + ".txt");
+        FileReader fr = new FileReader(f);
+        BufferedReader bfr = new BufferedReader(fr);
+        String line = null;
+        try {
+            line = bfr.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line != null) {
+            studentAnswers.add(line);
+            try {
+                line = bfr.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<String> scores = new ArrayList<>();
+        File f3 = new File(courseName, quizName + ".txt");
+        FileReader fr2 = new FileReader(f3);
+        BufferedReader bfr2 = new BufferedReader(fr2);
+        String line2 = null;
+        try {
+            line2 = bfr2.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line2 != null) {
+            scores.add(line2);
+            try {
+                line2 = bfr2.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        File f2 = new File(studentSubmissions, studentAnswerSheet + ".txt");
+        FileOutputStream fos2 = new FileOutputStream(f2, true);
+        PrintWriter pw2 = new PrintWriter(fos2);
+        int score = 0;
+        int total = 0;
+        int indexOfBlank = 0;
+        pw2.println();
+        pw2.println();
+        pw2.println("Student Grading Report: ");
+        pw2.println();
+        for (int i = 0; i < answers.size(); i++) {
+            if (answers.get(i).equals(studentAnswers.get(i))) {
+                score = score + points.get(i);
+                pw2.println("Student got this question correct!");
+                pw2.println(points.get(i) + "/" + points.get(i));
+            } else {
+                pw2.println("Student answered this question incorrectly!");
+                pw2.println("0/" + points.get(i));
+            }
+            total = total + points.get(i);
+            for (int j = indexOfBlank; j < scores.size(); j++) {
+                pw2.println(scores.get(j));
+                indexOfBlank++;
+                if (scores.get(j).equals("")) {
+                    j = indexOfBlank + 1;
+                    break;
+                }
+            }
+        }
+        pw2.println("Total Score: " + score + "/" + total);
+        pw2.close();
+    }
+
+    public static ArrayList<String> viewStudentSubmission(File student, String studentSubmission) throws FileNotFoundException {
+        ArrayList<String> studentAnswers = new ArrayList<>();
+        File f = new File(student, studentSubmission);
+        FileReader fr = new FileReader(f);
+        BufferedReader bfr = new BufferedReader(fr);
+        String line = null;
+        try {
+            line = bfr.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line != null) {
+            studentAnswers.add(line);
+            try {
+                line = bfr.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return studentAnswers;
+    }
+
+    public static ArrayList<String> printAnswers(File studentSubmissions, String studentAnswerSheet)
+            throws FileNotFoundException {
+        ArrayList<String> studentAnswers = new ArrayList<>();
+        File f2 = new File(studentSubmissions, studentAnswerSheet);
+        FileReader fr2 = new FileReader(f2);
+        BufferedReader bfr2 = new BufferedReader(fr2);
+        String line2 = null;
+        try {
+            line2 = bfr2.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        while (line2 != null) {
+            studentAnswers.add(line2);
+            try {
+                line2 = bfr2.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bfr2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        studentAnswers.removeIf(s -> s.contains("2"));
+        return studentAnswers;
+    }
+
+    public static String printIndividualAnswer(ArrayList<String> studentAnswers, int indexNewLine) {
+        int i = 0;
+        String output = "";
+        for (i = indexNewLine; i < studentAnswers.size(); i++) {
+            String everything = studentAnswers.get(i).toString();
+            output += everything + "\n";
+            indexNewLine++;
+            i = indexNewLine;
+            break;
+        }
+        return output;
+    }
+
+    public static int printIndividualAnswer1(ArrayList<String> studentAnswers, int indexNewLine) {
+        int i = 0;
+        for (i = indexNewLine; i < studentAnswers.size(); i++) {
+            indexNewLine++;
+            i = indexNewLine;
+            break;
+        }
+        return i;
+    }
+
+    public static void randomizeQuestions(File courseName, String quizName) throws IOException {
+        ArrayList<String> randomized = new ArrayList<>();
+        File f = new File(courseName, quizName + ".txt");
+        FileReader fr = new FileReader(f);
+        BufferedReader bfr = new BufferedReader(fr);
+        File f1 = new File(courseName, quizName + "answersheet.txt");
+        FileReader fr1 = new FileReader(f1);
+        BufferedReader bfr1 = new BufferedReader(fr1);
+        String line = bfr.readLine();
+        int counter = 0;
+        while (line!= null) {
+            randomized.add(line);
+            if (line.equals("")) {
+                String line1 = bfr1.readLine();
+                if (counter >= 70) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=10;
+                } else if (counter >= 63) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=9;
+                } else if (counter >= 56) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=8;
+                } else if (counter >= 49) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=7;
+                } else if (counter >= 42) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=6;
+                } else if (counter >= 35) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=5;
+                } else if (counter >= 28) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=4;
+                } else if (counter >= 21) {
+                    randomized.add("");
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=3;
+                } else if (counter >= 14) {
+                    randomized.add("");
+                    randomized.add("");
+                    counter +=2;
+                } else if (counter >= 7) {
+                    randomized.add("");
+                    counter++;
+                }
+                randomized.add(counter, line1.toLowerCase().substring(0, 1));
+            }
+            counter++;
+            line = bfr.readLine();
+        }
+        bfr.close();
+        ArrayList<String> randomized1 = new ArrayList<>();
+        counter = 0;
+        for (int i = 0; i < randomized.size(); i++) {
+            int indexOfBlank = 0;
+            if (randomized.get(i).equals("")) {
+                indexOfBlank = i;
+            }
+            if (indexOfBlank != 0) {
+                String question = "";
+                int j = 0;
+                for (j = counter; j < indexOfBlank; j++) {
+                    question = question + randomized.get(j) + "\n";
+                }
+                randomized1.add(question);
+                counter = j + 1;
+            }
+        }
+
+        for (int i = 0; i < randomized1.size(); i++) {
+            if (randomized1.get(i).length() == 0) {
+                randomized1.remove(i);
+            }
+        }
+        Collections.shuffle(randomized1);
+        System.out.println(randomized1);
+        ArrayList<String> randomizedAnswers = new ArrayList<>();
+        for (String value : randomized1) {
+            String s = value.substring(value.length() - 2, value.length() - 1);
+            randomizedAnswers.add(s);
+        }
+        File f2 = new File(courseName, quizName + "answersheet.txt");
+        FileOutputStream fos = new FileOutputStream(f2);
+        PrintWriter pw = new PrintWriter(fos);
+
+        for (String randomizedAnswer : randomizedAnswers) {
+            pw.println(randomizedAnswer);
+        }
+        pw.close();
+        File f3 = new File(courseName, quizName + ".txt");
+        FileOutputStream fos1 = new FileOutputStream(f3);
+        PrintWriter pw1 = new PrintWriter(fos1);
+        for (String randomized11 : randomized1) {
+            pw1.println(randomized11.substring(0, randomized11.length() - 2));
+        }
+        pw1.close();
+    }
+}
