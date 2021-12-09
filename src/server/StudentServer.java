@@ -24,7 +24,7 @@ public class StudentServer {
         netpw.flush();
     }
     public void takeQuiz() {
-        System.out.println("Entered take quiz method. !!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //System.out.println("Entered take quiz method. !!!!!!!!!!!!!!!!!!!!!!!!!!");
         if (username == null || netscan == null || netpw == null) {
             netpw.write("032~ Student server method finishes.\n");
             netpw.flush();
@@ -41,16 +41,11 @@ public class StudentServer {
             File directoryPath = new File(course);
             String[] content = directoryPath.list();
 
-            if (content != null) {
-                for (String contents : content) {
-                    System.out.println(contents);
-                }
-            }
             netpw.write("026~ Enter the file name of the quiz you want to take.\n");
             netpw.flush();
             filename = netscan.nextLine();
             f = new File(course, filename  + ".txt");
-            System.out.println(course + ": " + filename + " our print statment.");
+            //System.out.println(course + ": " + filename + " our print statment.");
             try {
                 fr = new FileReader(f);
             } catch (IOException e) {

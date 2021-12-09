@@ -1,7 +1,87 @@
+
+
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
+
+class Gui implements ActionListener {
+    JFrame frame;
+    JLabel label1;
+    JLabel label2;
+    JTextArea area;
+    JTextField field;
+    JScrollPane scroll;
+    JButton button;
+    volatile boolean isRunning = false;
+    volatile boolean guiFlag = false;
+
+    public void createGUI() {
+        frame = new JFrame("Quizzes");
+        area = new JTextArea();
+        area.setBounds(50,40,700,200);
+        area.setEditable(false);
+        scroll = new JScrollPane(area);
+        scroll.setBounds(50,40,710,210);
+        ///scroll.setAutoscrolls(true);
+        label1 = new JLabel("Display");
+        label1.setBounds(370, 10, 150,25);
+        field = new JTextField();
+        field.setBounds(100,310,600,30);
+        label2 = new JLabel("Input");
+        label2.setBounds(370,280, 150,20);
+        button = new JButton("Submit");
+        button.setBounds(330, 400, 100, 20);
+        button.addActionListener(this);
+        //frame.add(area);
+        frame.add(field);
+        frame.add(button);
+        frame.add(label1);
+        frame.add(label2);
+        frame.add(scroll);
+        frame.setSize(800,500);
+        frame.setLayout(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        isRunning = true;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == button) {
+            guiFlag = true;
+        }
+    }
+
+    public String getText() {
+        String str = field.getText();
+        field.setText("");
+        return str;
+    }
+
+    public void setText(String str) {
+        area.setText(str + "\n");
+    }
+    public void appendText(String str) {
+        area.append(str + "\n");
+    }
+
+    public boolean getGuiFlag() {
+        return guiFlag;
+    }
+
+    public void resetGuiFlag() {
+        guiFlag = false;
+    }
+
+    public boolean getIsRunning() {
+        return isRunning;
+    }
+
+}
 
 public class NetworkClient {
 
@@ -22,14 +102,23 @@ public class NetworkClient {
     static ArrayList<String> returnedArrayList = null;
     static String[] returnedArray = null;
     static int returnedInt = 0;
-
+    static Gui gui = new Gui();
     public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                gui.createGUI();
+            }
+        });
+
+        while (!gui.getIsRunning()) {
+            ;
+        }
         boolean flag;
         Socket socket;
         try {
             socket = new Socket("localhost.localdomain", 6457);
         } catch (IOException e) {
-            System.out.println("Error with socket.");
+            gui.appendText("Error with socket.");
             return;
         }
 
@@ -37,7 +126,7 @@ public class NetworkClient {
             netscan = new Scanner(socket.getInputStream());
             netpw = new PrintWriter(socket.getOutputStream());
         } catch (IOException e) {
-            System.out.println("Error getting stream from socket.");
+            gui.appendText("Error getting stream from socket.");
             return;
         }
         String serverInfo;
@@ -46,10 +135,10 @@ public class NetworkClient {
             serverInfo = netscan.nextLine();
             serverInfoSplit = serverInfo.split("~");
             if (serverInfoSplit[0].equals("000")) {
-                System.out.println("Server failed");
+                gui.appendText("Server failed");
                 return;
             } else if (serverInfoSplit[0].equals("002")) {
-                System.out.println("Server ready!");
+                gui.appendText("Server ready!");
                 break;
             }
         }
@@ -61,24 +150,24 @@ public class NetworkClient {
         int flag4 = 1;
         do {
             flag4 = 1;
-            System.out.println(WELCOME_MESSAGE);
-            System.out.println("PLEASE DO NOT ENTER .txt when entering the file names of quizzes, courses," +
+            gui.appendText(WELCOME_MESSAGE);
+            gui.appendText("PLEASE DO NOT ENTER .txt when entering the file names of quizzes, courses," +
                     " and submissions");
-            System.out.println(CURRENT_MEMBER);
-            String currentMember = sc.nextLine();
+            gui.appendText(CURRENT_MEMBER);
+            String currentMember = getInput();
 
             if (currentMember.equalsIgnoreCase("Yes")) {
 
-                System.out.println(ACCOUNT_MENU);
-                int accountChoice = sc.nextInt();
-                sc.nextLine();
+                gui.appendText(ACCOUNT_MENU);
+                int accountChoice = getInt();
+                //getInput();
 
                 if (accountChoice == 1) {
                     while (true) {
-                        System.out.println(USERNAME_PROMPT);
-                        String username = sc.nextLine();
-                        System.out.println(PASSWORD_PROMPT);
-                        String password = sc.nextLine();
+                        gui.appendText(USERNAME_PROMPT);
+                        String username = getInput();
+                        gui.appendText(PASSWORD_PROMPT);
+                        String password = getInput();
 
                         netpw.write("003~" + username + "~" + password + "\n");
                         netpw.flush();
@@ -86,11 +175,11 @@ public class NetworkClient {
 
 
                         if (user) {
-                            System.out.println(STUDENT_OR_TEACHER);
-                            String teacherOrStudent = sc.nextLine();
+                            gui.appendText(STUDENT_OR_TEACHER);
+                            String teacherOrStudent = getInput();
 
                             if (teacherOrStudent.equalsIgnoreCase("teacher")) {
-                                System.out.println("When inputting names of quizzes, courses, and student answers;" +
+                                gui.appendText("When inputting names of quizzes, courses, and student answers;" +
                                         " please do not include" +
                                         "-- .txt -- in your response");
                                 String courseName;
@@ -101,26 +190,26 @@ public class NetworkClient {
                                     boolean finished = false;
                                     do {
                                         try {
-                                            System.out.println("Please enter the number of the option that you would " +
+                                            gui.appendText("Please enter the number of the option that you would " +
                                                     "like to choose: \n" +
                                                     "1. Create Course\n" +
                                                     "2. Manage Course\n" +
                                                     "3. View/Grade Student Submissions\n" +
                                                     "4. Exit");
-                                            ongoing = sc.nextInt();
-                                            sc.nextLine();
+                                            ongoing = getInt();
+                                            //getInput();
                                             finished = true;
                                         } catch (InputMismatchException e) {
-                                            System.out.println("This is not an integer, please try again!");
-                                            sc.nextLine();
+                                            gui.appendText("This is not an integer, please try again!");
+                                            getInput();
                                         }
                                     } while (!finished);
                                     if (ongoing == 1) {
                                         String courseName1;
                                         while (true) {
-                                            System.out.println("Please enter the name of the course that you would" +
+                                            gui.appendText("Please enter the name of the course that you would" +
                                                     " like to create");
-                                            courseName1 = sc.nextLine();
+                                            courseName1 = getInput();
 
                                             netpw.write("051~" + courseName1 + "\n");
                                             netpw.flush();
@@ -132,9 +221,9 @@ public class NetworkClient {
                                         //Teacher1.createCourse(courseName1);
                                     } else if (ongoing == 2) {
                                         while (true) {
-                                            System.out.println("Enter the course name that you would like to manage");
-                                            //courseName = new File(sc.nextLine());
-                                            courseName = sc.nextLine();
+                                            gui.appendText("Enter the course name that you would like to manage");
+                                            //courseName = new File(getInput());
+                                            courseName = getInput();
 
                                             netpw.write("053~" + courseName + "\n");
                                             netpw.flush();
@@ -142,7 +231,7 @@ public class NetworkClient {
                                             if (flag == true) {
                                                 break;
                                             } else {
-                                                System.out.println("This course does not exist, please try again!");
+                                                gui.appendText("This course does not exist, please try again!");
                                             }
                                         }
 
@@ -151,33 +240,33 @@ public class NetworkClient {
                                             finished = false;
                                             do {
                                                 try {
-                                                    System.out.println("Please enter the number of the option that" +
+                                                    gui.appendText("Please enter the number of the option that" +
                                                             " you would like to choose: \n" +
                                                             "1. Add Quiz\n" +
                                                             "2. Delete Quiz\n" +
                                                             "3. Manage Quiz\n" +
                                                             "4. Exit");
-                                                    ongoing1 = sc.nextInt();
-                                                    sc.nextLine();
+                                                    ongoing1 = getInt();
+                                                    //getInput();
                                                     finished = true;
                                                 } catch (InputMismatchException e) {
-                                                    System.out.println("This is not an integer, please try again!");
-                                                    sc.nextLine();
+                                                    gui.appendText("This is not an integer, please try again!");
+                                                    getInput();
                                                 }
                                             } while (!finished);
                                             if (ongoing1 == 1) {
                                                 String quizName;
                                                 while (true) {
-                                                    System.out.println("Please enter the name of the quiz that you" +
+                                                    gui.appendText("Please enter the name of the quiz that you" +
                                                             " would like to create");
-                                                    quizName = sc.nextLine();
+                                                    quizName = getInput();
 
                                                     netpw.write("055~" + courseName + "~" + quizName + "\n");
                                                     netpw.flush();
                                                     flag = processServerInput();
 
                                                     if (!flag) {
-                                                        System.out.println("This quiz already exists, " +
+                                                        gui.appendText("This quiz already exists, " +
                                                                 "please try again!");
                                                     } else {
 
@@ -191,8 +280,8 @@ public class NetworkClient {
                                             } else if (ongoing1 == 2) {
                                                 String quizName;
                                                 while (true) {
-                                                    System.out.println("What quiz would you like to delete?");
-                                                    quizName = sc.nextLine();
+                                                    gui.appendText("What quiz would you like to delete?");
+                                                    quizName = getInput();
 
                                                     netpw.write("057~" + courseName + "~" + quizName + "\n");
                                                     netpw.flush();
@@ -201,7 +290,7 @@ public class NetworkClient {
                                                     //String quiz = Teacher1.deleteQuiz(courseName, quizName);
 
                                                     if (!flag) {
-                                                        System.out.println("This quiz does not exist," +
+                                                        gui.appendText("This quiz does not exist," +
                                                                 " please try again!");
                                                     } else {
                                                         netpw.write("057~" + courseName + "~" + quizName + "points\n");
@@ -220,9 +309,9 @@ public class NetworkClient {
                                             } else if (ongoing1 == 3) {
                                                 String quizName;
                                                 while (true) {
-                                                    System.out.println("Please enter the quiz" +
+                                                    gui.appendText("Please enter the quiz" +
                                                             " name that you would like to manage");
-                                                    quizName = sc.nextLine();
+                                                    quizName = getInput();
 
                                                     netpw.write("053~" + courseName + "/" + quizName + ".txt" + "\n");
                                                     netpw.flush();
@@ -231,7 +320,7 @@ public class NetworkClient {
                                                     if (flag) {
                                                         break;
                                                     } else {
-                                                        System.out.println("This quiz does not exist," +
+                                                        gui.appendText("This quiz does not exist," +
                                                                 " please try again!");
                                                     }
                                                 }
@@ -240,26 +329,26 @@ public class NetworkClient {
                                                     finished = false;
                                                     do {
                                                         try {
-                                                            System.out.println("Please enter the number of the " +
+                                                            gui.appendText("Please enter the number of the " +
                                                                     "option that you would like to choose: \n" +
                                                                     "1. Add Question\n" +
                                                                     "2. Remove Question\n" +
                                                                     "3. Exit");
-                                                            ongoing2 = sc.nextInt();
-                                                            sc.nextLine();
+                                                            ongoing2 = getInt();
+                                                            //getInput();
                                                             finished = true;
                                                         } catch (InputMismatchException e) {
-                                                            System.out.println("This is not an integer," +
+                                                            gui.appendText("This is not an integer," +
                                                                     " please try again!");
-                                                            sc.nextLine();
+                                                            getInput();
                                                         }
                                                     } while (!finished);
                                                     if (ongoing2 == 1) {
                                                         String again = "yes";
                                                         do {
-                                                            System.out.println("What is the question" +
+                                                            gui.appendText("What is the question" +
                                                                     " that you would like to add?");
-                                                            String question = sc.nextLine();
+                                                            String question = getInput();
 
                                                             netpw.write("059~" + courseName + "~" + quizName + "~" + question + "\n");
                                                             netpw.flush();
@@ -268,7 +357,7 @@ public class NetworkClient {
                                                             //Teacher1.addQuestionTitle(courseName, quizName, question);
 
                                                             if (!flag){
-                                                                System.out.println("File was not found.");
+                                                                gui.appendText("File was not found.");
                                                                 return;
                                                             }
 
@@ -276,25 +365,26 @@ public class NetworkClient {
                                                             finished = false;
                                                             do {
                                                                 try {
-                                                                    System.out.println("How many answer choices would" +
+                                                                    gui.appendText("How many answer choices would" +
                                                                             " you like this question to have?");
-                                                                    numAnswerChoices = sc.nextInt();
-                                                                    sc.nextLine();
+                                                                    numAnswerChoices = getInt();
+                                                                    //getInput();
                                                                     finished = true;
                                                                 } catch (InputMismatchException e) {
-                                                                    System.out.println("This is not an integer," +
+                                                                    gui.appendText("This is not an integer," +
                                                                             " please try again!");
-                                                                    sc.nextLine();
+                                                                    getInput();
                                                                 }
                                                             } while (!finished);
                                                             int answerChoiceNumber = 1;
                                                             ArrayList<String> answerChoices = new ArrayList<>();
                                                             while (answerChoiceNumber <= numAnswerChoices) {
-                                                                System.out.println("Please enter the answer choice" +
+                                                                gui.appendText("Please enter the answer choice" +
                                                                         " for option number " + answerChoiceNumber);
-                                                                String answer = sc.nextLine();
+                                                                String answer = getInput();
 
                                                                 String choices = "";
+
                                                                 for (int i = 0; i < answerChoices.size(); i++) {
                                                                     if (i == answerChoices.size() - 1) {
                                                                         choices = choices + answerChoices.get(i);
@@ -309,13 +399,15 @@ public class NetworkClient {
                                                                 netpw.flush();
                                                                 boolean flaglocal = processServerInput();
 
+                                                                answerChoices = returnedArrayList;
+
 
                                                                 // Teacher1.addAnswerChoice(courseName, quizName,
                                                                 // answer, answerChoices, answerChoiceNumber);
 
 
                                                                 if(!flaglocal) {
-                                                                    System.out.println("File not Found");
+                                                                    gui.appendText("File not Found");
                                                                     return;
                                                                 }
                                                                 answerChoiceNumber++;
@@ -326,10 +418,10 @@ public class NetworkClient {
                                                             netpw.flush();
                                                             flag = processServerInput();
 
-                                                                ///Teacher1.addSpace(courseName, quizName);
+                                                            ///Teacher1.addSpace(courseName, quizName);
 
-                                                             if (!flag) {
-                                                                System.out.println("File not found.");
+                                                            if (!flag) {
+                                                                gui.appendText("File not found.");
                                                                 return;
                                                             }
 
@@ -337,7 +429,7 @@ public class NetworkClient {
                                                             while (count < numAnswerChoices) {
                                                                 String s = String.valueOf(Character.toChars(
                                                                         count + 65));
-                                                                System.out.println(s + ") " + answerChoices.get(count));
+                                                                gui.appendText(s + ") " + answerChoices.get(count));
                                                                 count++;
                                                             }
                                                             int correctAnswer = 0;
@@ -345,20 +437,20 @@ public class NetworkClient {
                                                             do {
                                                                 try {
 
-                                                                    System.out.println("Which answer choice is the" +
+                                                                    gui.appendText("Which answer choice is the" +
                                                                             " correct answer? 1 is A, 2 is B, etc...");
-                                                                    correctAnswer = sc.nextInt();
-                                                                    sc.nextLine();
+                                                                    correctAnswer = getInt();
+                                                                    //getInput();
                                                                     if (correctAnswer > numAnswerChoices) {
-                                                                        System.out.println("This is not a number " +
+                                                                        gui.appendText("This is not a number " +
                                                                                 "correlated to an answer choice," +
                                                                                 " please try again");
                                                                     }
                                                                     finished = true;
                                                                 } catch (InputMismatchException e) {
-                                                                    System.out.println("This is not an integer, " +
+                                                                    gui.appendText("This is not an integer, " +
                                                                             "please try again!");
-                                                                    sc.nextLine();
+                                                                    getInput();
                                                                 }
                                                             } while (!finished || correctAnswer > numAnswerChoices);
 
@@ -373,29 +465,29 @@ public class NetworkClient {
 
                                                             netpw.write("065~" + courseName + "~" + quizName +
                                                                     "~" + correctAnswer + "~" +
-                                                                        choices + "\n");
+                                                                    choices + "\n");
                                                             netpw.flush();
                                                             flag = processServerInput();
 
 
-                                                                //Teacher1.chooseCorrectAnswer(courseName, quizName,
-                                                                       // correctAnswer, answerChoices);
-                                                             if (!flag) {
-                                                                System.out.println("File not found.");
+                                                            //Teacher1.chooseCorrectAnswer(courseName, quizName,
+                                                            // correctAnswer, answerChoices);
+                                                            if (!flag) {
+                                                                gui.appendText("File not found.");
                                                                 return;
                                                             }
                                                             while (true) {
-                                                                System.out.println("Would you like to add another " +
+                                                                gui.appendText("Would you like to add another " +
                                                                         "question for this quiz? " +
                                                                         "Please enter yes or no");
-                                                                again = sc.nextLine();
+                                                                again = getInput();
                                                                 again = again.toLowerCase();
                                                                 if (again.equals("yes")) {
                                                                     break;
                                                                 } else if (again.equals("no")) {
                                                                     break;
                                                                 } else {
-                                                                    System.out.println("Please try again");
+                                                                    gui.appendText("Please try again");
                                                                 }
                                                             }
                                                         } while (!again.equals("no"));
@@ -407,26 +499,26 @@ public class NetworkClient {
                                                         flag = processServerInput();
                                                         quiz = returnedArrayList;
 
-                                                            //quiz =Teacher1.displayQuizLineNumbers
-                                                                    //(courseName, quizName);
+                                                        //quiz =Teacher1.displayQuizLineNumbers
+                                                        //(courseName, quizName);
 
 
-                                                         if (!flag) {
-                                                            System.out.println("File not found.");
+                                                        if (!flag) {
+                                                            gui.appendText("File not found.");
                                                             return;
                                                         }
                                                         int firstLine = 0;
                                                         finished = false;
                                                         do {
                                                             try {
-                                                                System.out.println("Enter the number to the left of" +
+                                                                gui.appendText("Enter the number to the left of" +
                                                                         " the first line of the question you would " +
                                                                         "like to remove");
-                                                                firstLine = sc.nextInt();
-                                                                sc.nextLine();
+                                                                firstLine = getInt();
+                                                                //getInput();
                                                                 finished = true;
                                                             } catch (InputMismatchException e) {
-                                                                System.out.println("This is not an integer, " +
+                                                                gui.appendText("This is not an integer, " +
                                                                         "please try again!");
                                                                 sc.hasNextLine();
                                                             }
@@ -435,14 +527,14 @@ public class NetworkClient {
                                                         finished = false;
                                                         do {
                                                             try {
-                                                                System.out.println("Enter the number to the left of " +
+                                                                gui.appendText("Enter the number to the left of " +
                                                                         "the blank at the last line of the question " +
                                                                         "you would like to remove");
-                                                                secondLine = sc.nextInt();
-                                                                sc.nextLine();
+                                                                secondLine = getInt();
+                                                                //getInput();
                                                                 finished = true;
                                                             } catch (InputMismatchException e) {
-                                                                System.out.println("This is not an integer," +
+                                                                gui.appendText("This is not an integer," +
                                                                         " please try again!");
                                                                 sc.hasNextLine();
                                                             }
@@ -452,16 +544,16 @@ public class NetworkClient {
 
                                                         netpw.write("069~" + firstLine + "~" + secondLine + "~" +
                                                                 str + "~" + courseName + "~" +
-                                                                    quizName + "\n");
+                                                                quizName + "\n");
                                                         netpw.flush();
                                                         flag = processServerInput();
 
 
 
-                                                            //Teacher1.removeQuestion(firstLine, secondLine, quiz,
-                                                                    //courseName, quizName);
-                                                         if (!flag) {
-                                                            System.out.println("File not found");
+                                                        //Teacher1.removeQuestion(firstLine, secondLine, quiz,
+                                                        //courseName, quizName);
+                                                        if (!flag) {
+                                                            gui.appendText("File not found");
                                                             return;
                                                         }
                                                         ArrayList<String> answerSheet;
@@ -472,30 +564,30 @@ public class NetworkClient {
                                                         flag = processServerInput();
 
                                                         answerSheet = returnedArrayList;
-                                                            //answerSheet = Teacher1.displayLinesForAnswerSheet
-                                                                    //(courseName, quizName);
-                                                         if (!flag) {
-                                                            System.out.println("File was not found.");
+                                                        //answerSheet = Teacher1.displayLinesForAnswerSheet
+                                                        //(courseName, quizName);
+                                                        if (!flag) {
+                                                            gui.appendText("File was not found.");
                                                             return;
                                                         }
                                                         int lineNumber = 0;
                                                         finished = false;
                                                         do {
                                                             try {
-                                                                System.out.println("Enter the number to the left of" +
+                                                                gui.appendText("Enter the number to the left of" +
                                                                         " the answer to the question that you removed");
-                                                                lineNumber = sc.nextInt();
-                                                                sc.nextLine();
+                                                                lineNumber = getInt();
+                                                                //getInput();
                                                                 finished = true;
                                                             } catch (InputMismatchException e) {
-                                                                System.out.println("This is not an integer," +
+                                                                gui.appendText("This is not an integer," +
                                                                         " please try again");
-                                                                sc.nextLine();
+                                                                getInput();
                                                             }
                                                         } while (!finished);
                                                         String string = convertToString(answerSheet);
                                                         netpw.write("073~" + courseName + "~" + quizName + "~" +
-                                                                 string + "~" +
+                                                                string + "~" +
                                                                 lineNumber +  "\n");
                                                         netpw.flush();
                                                         flag = processServerInput();
@@ -503,19 +595,19 @@ public class NetworkClient {
                                                         // Teacher1.removeAnswerFromAnswerSheet
                                                         //(courseName, quizName, answerSheet, lineNumber);
                                                         if (!flag) {
-                                                            System.out.println("File was not found.");
+                                                            gui.appendText("File was not found.");
                                                             return;
                                                         }
                                                     } else if (ongoing2 == 3) {
                                                         break;
                                                     } else {
-                                                        System.out.println("Invalid input!");
+                                                        gui.appendText("Invalid input!");
                                                     }
                                                 }
                                             } else if (ongoing1 == 4) {
                                                 break;
                                             } else {
-                                                System.out.println("Invalid input!");
+                                                gui.appendText("Invalid input!");
                                             }
                                         }
                                     } else if (ongoing == 3) {
@@ -532,29 +624,29 @@ public class NetworkClient {
                                             finished = false;
                                             do {
                                                 try {
-                                                    System.out.println("Enter the number next to the option that" +
+                                                    gui.appendText("Enter the number next to the option that" +
                                                             " you would like to choose\n" +
                                                             "1. View Student's Submitted Quiz\n" +
                                                             "2. Grade Student's Submitted Quiz\n" +
                                                             "3. Exit");
-                                                    ongoing3 = sc.nextInt();
-                                                    sc.nextLine();
+                                                    ongoing3 = getInt();
+                                                    //getInput();
                                                     finished = true;
                                                 } catch (InputMismatchException e) {
-                                                    System.out.println("This is not an integer, please try again!");
-                                                    sc.nextLine();
+                                                    gui.appendText("This is not an integer, please try again!");
+                                                    getInput();
                                                 }
                                             } while (!finished);
                                             if (ongoing3 == 1) {
                                                 if (contents != null) {
                                                     for (String content : contents) {
-                                                        System.out.println(content);
+                                                        gui.appendText(content);
                                                     }
                                                 }
                                                 String studentSubmission;
-                                                System.out.println("Please enter the name of the student " +
+                                                gui.appendText("Please enter the name of the student " +
                                                         "submission that you would like to view");
-                                                studentSubmission = sc.nextLine();
+                                                studentSubmission = getInput();
 
                                                 netpw.write("077~" + directoryPath + "~" + studentSubmission + "\n");
                                                 netpw.flush();
@@ -562,19 +654,19 @@ public class NetworkClient {
 
                                                 ///File f;
 
-                                                    ///f = Teacher1.viewStudentSubmission
-                                                            ///(directoryPath, studentSubmission);
+                                                ///f = Teacher1.viewStudentSubmission
+                                                ///(directoryPath, studentSubmission);
                                                 if (!flag) {
-                                                    System.out.println("File not found.");
+                                                    gui.appendText("File not found.");
                                                     return;
                                                 }
                                             } else if (ongoing3 == 2) {
                                                 String quizName;
 
                                                 while (true) {
-                                                    System.out.println("What is the name of the course of the " +
+                                                    gui.appendText("What is the name of the course of the " +
                                                             "quiz you want to grade?");
-                                                    courseName = sc.nextLine();
+                                                    courseName = getInput();
 
                                                     netpw.write("075~" + courseName + "\n");
                                                     netpw.flush();
@@ -587,12 +679,12 @@ public class NetworkClient {
 
                                                     if (content != null) {
                                                         for (String contents1 : content) {
-                                                            System.out.println(contents1);
+                                                            gui.appendText(contents1);
                                                         }
                                                     }
-                                                    System.out.println("What is the name of the quiz that " +
+                                                    gui.appendText("What is the name of the quiz that " +
                                                             "you would like to grade?");
-                                                    quizName = sc.nextLine();
+                                                    quizName = getInput();
 
                                                     netpw.write("053~" + courseName + "/" + quizName + ".txt" + "\n");
                                                     netpw.flush();
@@ -601,25 +693,24 @@ public class NetworkClient {
                                                     if (flag) {
                                                         break;
                                                     } else {
-                                                        System.out.println("This quiz does not exist, " +
+                                                        gui.appendText("This quiz does not exist, " +
                                                                 "please try again!");
                                                     }
                                                 }
                                                 if (contents != null) {
                                                     for (String content : contents) {
-                                                        System.out.println(content);
+                                                        gui.appendText(content);
                                                     }
                                                 }
                                                 String studentAnswerSheet;
                                                 while (true) {
-                                                    System.out.println("What is the name of the student answer" +
+                                                    gui.appendText("What is the name of the student answer" +
                                                             " sheet that you would like to grade? Do NOT include .txt in" +
                                                             " the name." +
                                                             " Please select the answer sheet that contains " +
                                                             "'finalanswers'.");
-                                                    studentAnswerSheet = sc.nextLine();
+                                                    studentAnswerSheet = getInput();
 
-                                                    ////////////////////////////////////////////////
                                                     netpw.write("053~" + directoryPath + "/" + studentAnswerSheet
                                                             + ".txt" + "\n");
                                                     netpw.flush();
@@ -628,11 +719,10 @@ public class NetworkClient {
                                                     if (flag) {
                                                         break;
                                                     } else {
-                                                        System.out.println("This answer sheet does not exist," +
+                                                        gui.appendText("This answer sheet does not exist," +
                                                                 " please try again");
                                                     }
                                                 }
-                                                System.out.println();
                                                 ArrayList<String> scores;
 
                                                 netpw.write("079~" + courseName + "~" + quizName + "\n");
@@ -640,9 +730,10 @@ public class NetworkClient {
                                                 flag = processServerInput();
                                                 scores = returnedArrayList;
 
-                                                   /// scores = Teacher1.printQuiz(courseName, quizName);
-                                                 if (!flag) {
-                                                    System.out.println("File not found.");
+                                                /// scores = Teacher1.printQuiz(courseName, quizName);
+
+                                                if (!flag) {
+                                                    gui.appendText("File not found.");
                                                     return;
                                                 }
                                                 ArrayList<String> studentAnswers;
@@ -653,18 +744,25 @@ public class NetworkClient {
                                                 studentAnswers = returnedArrayList;
 
 
-                                                    //studentAnswers = Teacher1.printAnswers(directoryPath,
-                                                            //studentAnswerSheet);
-                                                 if (!flag) {
-                                                    System.out.println("File not found.");
+                                                //studentAnswers = Teacher1.printAnswers(directoryPath,
+                                                //studentAnswerSheet);
+
+                                                if (!flag) {
+                                                    gui.appendText("File not found.");
                                                     return;
                                                 }
+
                                                 String str = convertToString(scores);
+
                                                 netpw.write("083~" + str + "\n");
                                                 netpw.flush();
                                                 flag = processServerInput();
-                                                int numQuestions = returnedInt;
+                                                int numQuestions = returnedInt + 1;
+
                                                 //int numQuestions = Teacher1.numQuestions(scores);
+
+
+
                                                 int counter = 0;
                                                 int indexOfBlank = 0;
                                                 int indexNewLine = 0;
@@ -678,7 +776,7 @@ public class NetworkClient {
 
                                                     //int j = Teacher1.printIndividualQuestion(scores, indexOfBlank);
 
-                                                    System.out.print("Student Answer: ");
+                                                    //System.out.print("Student Answer: ");
 
                                                     String str3 = convertToString(studentAnswers);
                                                     netpw.write("087~" + str3 + "~" + indexNewLine + "\n");
@@ -695,29 +793,28 @@ public class NetworkClient {
                                                     finished = false;
                                                     do {
                                                         try {
-                                                            System.out.println("How many points would you like to" +
+                                                            gui.appendText("How many points would you like to" +
                                                                     " assign to this question?");
-                                                            numPoints = sc.nextInt();
-                                                            sc.nextLine();
+                                                            numPoints = getInt();
+                                                           // getInput();
                                                             finished = true;
                                                         } catch (InputMismatchException e) {
-                                                            System.out.println("This is not an integer, " +
+                                                            gui.appendText("This is not an integer, " +
                                                                     "please try again!");
-                                                            sc.nextLine();
+                                                            getInput();
                                                         }
                                                     } while (!finished);
-
+                                                    points.add(numPoints); //////////changed here
                                                     String str4 = convertIntsToString(points);
-
                                                     netpw.write("089~" + courseName + "~" + quizName + "~" +
                                                             numPoints + "~" +
-                                                             str4 + "\n");
+                                                            str4 + "\n");
                                                     netpw.flush();
                                                     flag = processServerInput();
 
                                                     //Teacher1.addPoints(courseName, quizName, numPoints, points);
                                                     if (!flag) {
-                                                        System.out.println("File not found.");
+                                                        gui.appendText("File not found.");
                                                         return;
                                                     }
                                                     counter++;
@@ -731,23 +828,23 @@ public class NetworkClient {
                                                 flag = processServerInput();
 
 
-                                                    ////Teacher1.gradeStudent(courseName, directoryPath, quizName,
-                                                            //studentAnswerSheet);
+                                                ////Teacher1.gradeStudent(courseName, directoryPath, quizName,
+                                                //studentAnswerSheet);
                                                 if (!flag) {
-                                                    System.out.println("File not found.");
+                                                    gui.appendText("File not found.");
                                                     return;
                                                 }
                                             } else if (ongoing3 == 3) {
                                                 break;
                                             } else {
-                                                System.out.println("Invalid input!");
+                                                gui.appendText("Invalid input!");
                                             }
                                         }
                                     } else if (ongoing == 4) {
-                                        System.out.println("Thank you for logging in!");
+                                        gui.appendText("Thank you for logging in!");
                                         break;
                                     } else {
-                                        System.out.println("Invalid input!");
+                                        gui.appendText("Invalid input!");
                                     }
                                 }
                                 break;
@@ -758,20 +855,20 @@ public class NetworkClient {
 
                                 while (true) {
                                     //////Student student = new Student(username);
-                                    System.out.println("1. Do you want to take a quiz?\n" +
+                                    gui.appendText("1. Do you want to take a quiz?\n" +
                                             "2. Do you want to submit a quiz?\n" +
                                             "3. Do you" +
                                             " want to view your grading report?\n" +
                                             "4. Exit");
-                                    int choice = sc.nextInt();
-                                    sc.nextLine();
+                                    int choice = getInt();
+                                    //getInput();
                                     if (choice == 1) {
                                         while (true) {
-                                            System.out.println("1. Do you want to take your quiz via the terminal?\n" +
+                                            gui.appendText("1. Do you want to take your quiz via the terminal?\n" +
                                                     "2. Do you want to take your" +
                                                     " quiz by uploading a file?\n3. Exit");
-                                            int quizChoice = sc.nextInt();
-                                            sc.nextLine();
+                                            int quizChoice = getInt();
+                                            //getInput();
 
                                             if (quizChoice == 1) {
                                                 netpw.write("031~" + "calling student takequiz" + "\n");
@@ -788,7 +885,7 @@ public class NetworkClient {
                                             } else if (quizChoice == 3) {
                                                 break;
                                             } else {
-                                                System.out.println("Invalid Input.");
+                                                gui.appendText("Invalid Input.");
                                             }
                                         }
                                     } else if (choice == 2) {
@@ -806,15 +903,15 @@ public class NetworkClient {
                                         break;
                                     }
                                     else {
-                                        System.out.println("Invalid input.");
+                                        gui.appendText("Invalid input.");
                                     }
                                 }
                                 break;
                             } else {
-                                System.out.println("Wrong Choice, try again");
+                                gui.appendText("Wrong Choice, try again");
                             }
                         } else {
-                            System.out.println("Wrong username or password, try again");
+                            gui.appendText("Wrong username or password, try again");
                         }
                     }
                 }
@@ -822,10 +919,10 @@ public class NetworkClient {
                     int flag1 = 0;
 
                     do {
-                        System.out.println(USERNAME_PROMPT);
-                        String username1 = sc.nextLine();
-                        System.out.println(PASSWORD_PROMPT);
-                        String password1 = sc.nextLine();
+                        gui.appendText(USERNAME_PROMPT);
+                        String username1 = getInput();
+                        gui.appendText(PASSWORD_PROMPT);
+                        String password1 = getInput();
 
                         //Login loginObj1 = new Login();
 
@@ -844,10 +941,10 @@ public class NetworkClient {
                             ////loginObj1.deleteUser(username1, password1);
 
 
-                            System.out.println("Account was successfully deleted!");
+                            gui.appendText("Account was successfully deleted!");
                             flag1 = 1;
                         } else {
-                            System.out.println("Please try again");
+                            gui.appendText("Please try again");
                         }
                     } while (flag1 == 0);
                 }
@@ -855,10 +952,10 @@ public class NetworkClient {
                     int flag2 = 0;
 
                     do {
-                        System.out.println(USERNAME_PROMPT);
-                        String username2 = sc.nextLine();
-                        System.out.println(PASSWORD_PROMPT);
-                        String password2 = sc.nextLine();
+                        gui.appendText(USERNAME_PROMPT);
+                        String username2 = getInput();
+                        gui.appendText(PASSWORD_PROMPT);
+                        String password2 = getInput();
 
                         netpw.write("003~" + username2 + "~" + password2  + "\n");
                         netpw.flush();
@@ -867,38 +964,38 @@ public class NetworkClient {
                         /////boolean b = loginObj2.alreadyUser(username2, password2);
 
                         if (flag) {
-                            System.out.println("What would you like your new username to be?");
-                            String newUserName = sc.nextLine();
+                            gui.appendText("What would you like your new username to be?");
+                            String newUserName = getInput();
 
 
                             ////loginObj2.editUsername(username2, newUserName);
 
-                            System.out.println("What would you like your new password to be?");
-                            String newPassword = sc.nextLine();
+                            gui.appendText("What would you like your new password to be?");
+                            String newPassword = getInput();
 
                             netpw.write("007~" + username2 + "~" + newUserName  + "~" + newPassword + "\n");
                             netpw.flush();
                             flag = processServerInput();
                             ////loginObj2.editPassword(newUserName, newPassword);
                             if (!flag) {
-                                System.out.println("Account was not successfully edited.");
+                                gui.appendText("Account was not successfully edited.");
                             } else {
                                 flag2 = 1;
-                                System.out.println("Account was successfully edited!");
+                                gui.appendText("Account was successfully edited!");
                             }
                         }
                     } while (flag2 == 0);
                 }
             } else if (currentMember.equalsIgnoreCase("no")) {
-                System.out.println(NEW_ACCOUNT);
-                String newAccountOrNot = sc.nextLine();
+                gui.appendText(NEW_ACCOUNT);
+                String newAccountOrNot = getInput();
 
                 if (newAccountOrNot.equalsIgnoreCase("yes")) {
                     while (true) {
-                        System.out.println(USERNAME_PROMPT);
-                        String username = sc.nextLine();
-                        System.out.println(PASSWORD_PROMPT);
-                        String password = sc.nextLine();
+                        gui.appendText(USERNAME_PROMPT);
+                        String username = getInput();
+                        gui.appendText(PASSWORD_PROMPT);
+                        String password = getInput();
 
                         netpw.write("009~" + username + "~" + password  + "\n");
                         netpw.flush();
@@ -910,21 +1007,21 @@ public class NetworkClient {
 
                         if (flag) {
                             ///loginObj.addPassword(password);
-                            System.out.println("Your account has successfully been created!");
+                            gui.appendText("Your account has successfully been created!");
                             break;
                         } else {
-                            System.out.println("Try again.");
+                            gui.appendText("Try again.");
                         }
                     }
                 }
             } else {
-                System.out.println("Wrong choice. Do you want to try again (yes/no)?");
-                String yesOrNo = sc.nextLine();
+                gui.appendText("Wrong choice. Do you want to try again (yes/no)?");
+                String yesOrNo = getInput();
 
                 if (yesOrNo.equalsIgnoreCase("yes")) {
                     flag4 = 0;
                 } else {
-                    System.out.println("Thank you for using the quiz bank.");
+                    gui.appendText("Thank you for using the quiz bank.");
                     flag4 = 1;
                 }
             }
@@ -933,30 +1030,35 @@ public class NetworkClient {
         //end of old main
 
 
+        //end of old main
         netpw.close();
         netscan.close();
+
+        gui.appendText("\nThe process has finished. Please exit the GUI through clicking the X on the" +
+                " top right corner of the screen. \nIf you need to use our program again," +
+                    " please run the program again.");
     }
 
     private static boolean processServerInput() {
         String stringInfo = "";
-        Scanner scan = new Scanner(System.in);
+        //Scanner scan = new Scanner(System.in);
         while(true) {
 
             stringInfo = netscan.nextLine();
-            ///System.out.println(stringInfo +"######## from server");  ////////////////////////////we are printing here
+            ///gui.appendText(stringInfo +"######## from server");  ////////////////////////////we are printing here
             String[] strArray = stringInfo.split("~");
             if (strArray[0].equals("028")) {
-                System.out.println(strArray[1]);
+                gui.appendText(strArray[1]);
             } else if (strArray[0].equals("026")) {
-                System.out.println(strArray[1]);
-                String str = scan.nextLine();
+                gui.appendText(strArray[1]);
+                String str = getInput();
                 netpw.write(str + "\n");
                 netpw.flush();
             } else if (strArray[0].equals("030")) {
-                System.out.println(strArray[1]);
+                //gui.appendText(strArray[1]);
                 return true;
             } else if (strArray[0].equals("032")) {
-                System.out.println(strArray[1]);
+                //gui.appendText(strArray[1]);
                 return false;
             } else if (strArray[0].equals("034")) {
                 String[] splitted = strArray[1].split("@");
@@ -964,18 +1066,24 @@ public class NetworkClient {
                 for (String each: splitted) {
                     arrayList.add(each);
                 }
+                for (String each: arrayList) {
+                    gui.appendText(each);
+                }
                 returnedArrayList = arrayList;
             } else if (strArray[0].equals("036")) {
                 String[] splitted = strArray[1].split("@");
+                for (String each: splitted) {
+                    gui.appendText(each);
+                }
                 returnedArray = splitted;
             } else if (strArray[0].equals("038")) {
                 returnedInt = Integer.parseInt(strArray[1]);
             } else if (strArray[0].equals("040")) {
                 String[] splitted = strArray[1].split("@");
                 for (String each: splitted) {
-                    System.out.println(each);
+                    gui.appendText(each);
                 }
-                String str = scan.nextLine();
+                String str = getInput();
                 netpw.write(str + "\n");
                 netpw.flush();
             }
@@ -1013,5 +1121,27 @@ public class NetworkClient {
             arrayList.add(each);
         }
         return arrayList;
+    }
+
+    public static String getInput() {
+        gui.resetGuiFlag();
+        while (true) {
+            if (gui.getGuiFlag()) {
+                gui.resetGuiFlag();
+                return gui.getText();
+            }
+        }
+    }
+
+    public static int getInt() {
+        String result = getInput();
+        int a;
+        try {
+            a = Integer.parseInt(result);
+        } catch (NumberFormatException e) {
+            gui.appendText("Not a number.");
+            return -1;
+        }
+        return a;
     }
 }

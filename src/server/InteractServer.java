@@ -60,9 +60,9 @@ public class InteractServer {
         while (true) {
             try {
                 netString = netscan.nextLine();
-                //System.out.println(netString + "!!!!!!!! from client"); //////////////////////////////////////////////
+                ///System.out.println(netString + "!!!!!!!! from client"); //////////////////////////////////////////////
             } catch (NoSuchElementException e) {
-                System.out.println("Client stopped.");
+                //System.out.println("Client stopped.");
                 return;
             }
             String[] split = netString.split("~");
@@ -103,7 +103,7 @@ public class InteractServer {
                 */
 
             } else if (split[0].equals("007")) {
-                System.out.println(split[1] + split[2] + "test printed by us.");
+                //System.out.println(split[1] + split[2] + "test printed by us.");
                 boolean a = loginserver.editUsername(split[1], split[2]);
                 if (a) {
                     loginserver.editPassword(split[2], split[3]);
@@ -198,7 +198,12 @@ public class InteractServer {
                 ArrayList<String> arr = convertToArrayList(split[1]);
                 teacherserver.printIndividualAnswer(arr, Integer.parseInt(split[2]));
             } else if (split[0].equals("089")) {
-                ArrayList<Integer> arr = convertToIntArrayList(split[4]);
+                ArrayList<Integer> arr;
+                if (split.length == 5) {
+                    arr = convertToIntArrayList(split[4]);
+                } else {
+                    arr = null;
+                }
                 teacherserver.addPoints(split[1], (split[2]), Integer.parseInt(split[3]), arr);
             } else if (split[0].equals("091")) {
                 teacherserver.gradeStudent(split[1], (split[2]), split[3], split[4]);
@@ -272,13 +277,18 @@ public class InteractServer {
     public String[] returnFileNames(String str) {
         File file = new File(str);
         String[] contents = file.list();
-        String string = convertToString(contents);
+        if (contents != null) {
+            String string = convertToString(contents);
 
-        netpw.write("036~" + string + "\n");
-        netpw.flush();
+            netpw.write("036~" + string + "\n");
+            netpw.flush();
 
-        netpw.write("030~ Files exist.\n");
-        netpw.flush();
+            netpw.write("030~ Files exist.\n");
+            netpw.flush();
+        } else {
+            netpw.write("032~ Directory does not exist.\n");
+            netpw.flush();
+        }
         return contents;
     }
 

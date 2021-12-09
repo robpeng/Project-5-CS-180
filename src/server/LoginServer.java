@@ -70,7 +70,7 @@ public class LoginServer {
     public boolean addUsername(String username) {
         for (int i = 0; i < records.size(); i++) {
             if (records.get(i).getUsername().equals(username)) {
-                netpw.write("032~ The file was not found.\n");
+                netpw.write("032~ Username already exists.\n");
                 netpw.flush();
                 return false;
             }
@@ -83,7 +83,7 @@ public class LoginServer {
     }
     public boolean addPassword(String password) {
         if (usernameField == null) {
-            netpw.write("032~ The file was not found.\n");
+            netpw.write("032~ Password not successfully added.\n");
             netpw.flush();
             return false;
         }
@@ -119,14 +119,14 @@ public class LoginServer {
     public boolean alreadyUser(String username, String password) {
         for (Record each: records) {
             if (each.getUsername().equals(username) && each.getPassword().equals(password)) {
-                System.out.println("Login success!");
+                //System.out.println("Login success!");
                 netpw.write("030~ Success alreadyUser()\n");
                 netpw.flush();
                 return true;
             }
         }
-        System.out.println("Username or password is wrong.");
-        netpw.write("032~ The file was not found.\n");
+        //System.out.println("Username or password is wrong.");
+        netpw.write("032~ Username or password is wrong.\n");
         netpw.flush();
         return false;
     }
@@ -149,7 +149,7 @@ public class LoginServer {
                 netpw.flush();
                 return true;
             } else {
-                netpw.write("032~ The file was not found.\n");
+                netpw.write("032~ Failure deleteUser().\n");
                 netpw.flush();
                 return false;
             }
@@ -163,7 +163,7 @@ public class LoginServer {
                 return true;
             }
         }
-        netpw.write("032~ The file was not found.\n");
+        netpw.write("032~ Failure existinguser().\n");
         netpw.flush();
         return false;
     }
@@ -180,7 +180,7 @@ public class LoginServer {
             if (each.getUsername().equals(username)) {
 
                 if (existinguserflag) {
-                    System.out.println("Username already exists!");
+                    //System.out.println("Username already exists!");
                     netpw.write("032~ The username already exists.\n");
                     netpw.flush();
                     return false;
@@ -189,7 +189,7 @@ public class LoginServer {
                         each.setUsername(newUsername);
                         writeRecordsToFile();
                     }
-                    System.out.println("Editing was success.");
+                    //System.out.println("Editing was success.");
                     netpw.write("030~ Success editusername()\n");
                     netpw.flush();
                     return true;
@@ -207,13 +207,13 @@ public class LoginServer {
                     each.setPassword(newPassword);
                     writeRecordsToFile();
                 }
-                System.out.println("Success!");
-                netpw.write("030~ Success editpasswrod()\n");
+                //System.out.println("Success!");
+                netpw.write("030~ Success editpassword()\n");
                 netpw.flush();
                 return;
             }
         }
-        netpw.write("032~ The file was not found.\n");
+        netpw.write("032~ failure editpassword().\n");
         netpw.flush();
     }
 
