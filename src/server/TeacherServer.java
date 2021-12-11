@@ -576,7 +576,7 @@ public class TeacherServer {
         pw2.println();
         for (int i = 0; i < answers.size(); i++) {
         //for (int i = 0; i < points.size(); i++) {
-            if (answers.get(i).equals(studentAnswers.get(i))) {
+            if (answers.get(i).equals(studentAnswers.get(i).toLowerCase())) {
                 score = score + points.get(i);
                 pw2.println("Student got this question correct!");
                 pw2.println(points.get(i) + "/" + points.get(i));
