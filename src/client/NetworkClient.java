@@ -116,7 +116,7 @@ public class NetworkClient {
         boolean flag;
         Socket socket;
         try {
-            socket = new Socket("localhost.localdomain", 6457);
+            socket = new Socket("localhost", 6457);
         } catch (IOException e) {
             gui.appendText("Error with socket.");
             return;
