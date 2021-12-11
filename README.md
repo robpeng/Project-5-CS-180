@@ -18,7 +18,7 @@
 
 |Method|Description|
 |------|------|
-|public ExistingUser (String message)|Constructor that super message from the Exception class.|
+
 
 ## LoginServer.java
 
