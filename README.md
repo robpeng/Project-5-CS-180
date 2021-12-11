@@ -14,11 +14,6 @@
  
 
 
-- Constructor Summary
-
-|Method|Description|
-|------|------|
-
 
 ## LoginServer.java
 
