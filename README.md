@@ -418,15 +418,15 @@ Input: [englishquiz1seojeong24finalanswers]
 
 Student Grading Report: 
  
- Student answered this question incorrectly!
- 0/3
+ Student answered this question correctly!
+ 3/3
  who wrote The Great Gatsby?
  A) F. Scott Fitzgerald
  B) Virginia Woolf
  C) Jane Austen
  D) William Shakespeare
  
- Total Score: 0/3
+ Total Score: 3/3
 Enter the number next to the option that you would like to choose
 1. View Student's Submitted Quiz
 2. Grade Student's Submitted Quiz
