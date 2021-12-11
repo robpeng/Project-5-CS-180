@@ -51,6 +51,10 @@ private String|password|password created by a user|
 
 - This class deals with student interaction with the program.
 
+|Modifier and Type|Field|Description|
+|------|---|---|
+|private String |username|stores username|
+
 -Constructor Summary
 
 |Method|Description|
