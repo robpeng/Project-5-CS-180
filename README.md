@@ -13,7 +13,7 @@
 
 ## NetworkClient.java
 
-- This class deals with the client side of the network interaction.
+- This class deals with the client side of the network interaction. It sends info over to the InteractServer class for processing.
 
 - This class contains class Gui which implements ActionListener
 
