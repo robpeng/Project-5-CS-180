@@ -20,6 +20,7 @@
 
 |Method|Description|
 |------|------|
+|public static void main(String[] args)|main method where invokeLater method and createGui() method are called|
 |public void createGUI()|method that creates the main user interface of the program|
 |public void actionPerformed(ActionEvent e)|method called when a button is clicked|
 |public String getText()|returns a string text|
