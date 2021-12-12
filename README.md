@@ -64,6 +64,29 @@ students' quiz submissions.
  2) Opens up a socket and wait for clients to connect
 ```
 
-
+## LoginServer.java
+- This class deals with the login feature of our program.
+- Field Summary 
+|Modifier and Type|Field|Description|
+|------|---|---|
+|private ArrayList< String >|usernamesArray|stores usernames|
+|private ArrayList< String >|passwordsArray|stores passwords|
+|private int|userNumber|unique number for each user|
+|private String|username|username created by a user|
+private String|password|password created by a user|
+- Constructor Summary 
+|Method|Description|
+|------|------|
+|public LoginServer()| constructs objects with no input parameters|
+- Method Summary 
+|Method|Description|
+|------|------|
+|public boolean addUsername(String username)|creates username for a new user|
+|public boolean addPassword(String password)|creates password for a new user|
+|public boolean alreadyUser(String username, String password)|login of an existing user|
+|public boolean numberOfExistingUsers()|returning the number of users present in the record file containing usernames|
+|public boolean editUsername(String username, String newUsername)|used when users want to edit their username|
+|public void editPassword(String password, String newPassword)|used when users want to edit their password|
+|public boolean deleteUser(String username, String password)|used when users want to delete their account|
 
 
