@@ -1,4 +1,4 @@
-**some test cases (note that these test cases are in order)**
+**Some test cases**
 
 **- Test 1: Teacher creating a course and quiz**
   - To create quiz use Manage Course, then add quiz
