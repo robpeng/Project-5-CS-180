@@ -10,7 +10,6 @@
 
 - Our program can be run by running Network Server class then running Network Client class. 
 - If the gui display shows "Error with socket", change the host name to whatever your host name is of your computer.
-- All the implementation is done in that class. Expected inputs and outputs are attached at the end of this document. 
 
 ## NetworkClient.java
 
