@@ -77,11 +77,15 @@ students' quiz submissions.
 |private int|userNumber|unique number for each user|
 |private String|username|username created by a user|
 private String|password|password created by a user|
+
 - Constructor Summary 
+
 |Method|Description|
 |------|------|
 |public LoginServer()| constructs objects with no input parameters|
+
 - Method Summary 
+
 |Method|Description|
 |------|------|
 |public boolean addUsername(String username)|creates username for a new user|
@@ -91,6 +95,7 @@ private String|password|password created by a user|
 |public boolean editUsername(String username, String newUsername)|used when users want to edit their username|
 |public void editPassword(String password, String newPassword)|used when users want to edit their password|
 |public boolean deleteUser(String username, String password)|used when users want to delete their account|
+
 ## StudentServer.java
 
 - This class deals with student interaction with the program.
