@@ -55,7 +55,7 @@ students' quiz submissions.
 ## NetworkServer.java
 
 - This class deals with the server side of the network interaction.
-- Summary of class NetworkClient
+- Summary of class NetworkServer
 
 ```
  1) The class implements interface Runnable to create a thread, starting the thread casues the 
