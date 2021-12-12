@@ -15,7 +15,7 @@
 
 - This class deals with the client side of the network interaction. It sends info over to the InteractServer class for processing.
 
-- This class contains class Gui which implements ActionListener
+- contains class Gui which implements ActionListener
 
 |Method|Description|
 |------|------|
@@ -67,6 +67,8 @@ students' quiz submissions.
 ## LoginServer.java
 
 - This class deals with the login feature of our program.
+
+- contains class Record which is for internal use in helping to store usernames and passwords
 
 - Field Summary 
 
