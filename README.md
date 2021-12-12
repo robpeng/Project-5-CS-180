@@ -109,16 +109,22 @@ private String|password|password created by a user|
 |Method|Description|
 |------|------|
 |public StudentServer()|constructs student object using default constructor|
+
 - Method Summary 
+
 |Method|Description|
 |------|------|
 |public void takeQuiz()|students can take any quiz from any courses they want|
 |public void submitQuiz()|students can submit their timestamped-answer files|
 |public void viewGradedQuiz()|student can view any graded quiz|
 |public void takeQuizViaUpload()|student can upload their answer file to any courses|
+
 ## TeacherServer.java
+
 - This class deals with teacher interaction with the program.
+
 -Method Summary
+
 |Method|Description|
 |------|------|
 |public File createCourse(String courseName)|teacher can create course|
