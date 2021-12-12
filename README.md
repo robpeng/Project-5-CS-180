@@ -59,7 +59,7 @@ students' quiz submissions.
 - Summary of class NetworkServer
 
 ```
- 1) The class implements interface Runnable to create a thread, starting the thread casues the 
+ 1) The class implements interface Runnable to create a thread, starting the thread causes the 
  object's run method to be called in that separately executing thread.
  
  2) Opens up a socket and wait for clients to connect
