@@ -170,7 +170,8 @@ students' quiz submissions.
 |private TeacherServer|teacherserver|teacherserver method to call teacherserver objects|
 |private String |netString|used to process certain input|
 |private static Object |gateKeeper|used for sychronization|
-
+|Scanner |netscan|used for reading stuff sent over via network|
+|PrintWriter|netpw|used for writing stuff over via network|
 
 |Method|Description|
 |------|------|
