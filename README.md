@@ -74,7 +74,7 @@ students' quiz submissions.
 |Modifier and Type|Field|Description|
 |------|---|---|
 |String|usernameField|stores username field|
-|static ArrayList<Record>|records|stores usernames and passwords for short time|
+|static ArrayList< Record >|records|stores usernames and passwords for short time|
 |File|f|long term storage of usernames and passwords|
 |private static Object|gateKeeper|used for synchronization to prevent race conditions|
 
