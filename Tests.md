@@ -317,7 +317,7 @@ Input: [englishquiz1seojeong24finalanswers]
 
 Student Grading Report: 
  
- Student answered this question correctly!
+ Student got this question correct!
  3/3
  who wrote The Great Gatsby?
  A) F. Scott Fitzgerald
