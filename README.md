@@ -65,8 +65,11 @@ students' quiz submissions.
 ```
 
 ## LoginServer.java
+
 - This class deals with the login feature of our program.
+
 - Field Summary 
+
 |Modifier and Type|Field|Description|
 |------|---|---|
 |private ArrayList< String >|usernamesArray|stores usernames|
