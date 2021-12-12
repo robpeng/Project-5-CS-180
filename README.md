@@ -100,6 +100,8 @@ private String|password|password created by a user|
 
 - This class deals with student interaction with the program.
 
+-Field Summary
+
 |Modifier and Type|Field|Description|
 |------|---|---|
 |private String |username|stores username|
