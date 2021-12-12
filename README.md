@@ -151,3 +151,30 @@ private String|password|password created by a user|
 |public int printIndividualAnswer(ArrayList< String > studentAnswers, int indexNewLine)|return index of a new line|
 
 
+## InteractServer.java
+
+- This class deals with the server side of the network interaction, by reading info sent from client.
+
+-Field Summary
+
+|Modifier and Type|Field|Description|
+|------|---|---|
+|private LoginServer|loginserver|loginserver object to call loginserver methods|
+|private StudentServer|studentserver|studentserver object to call studentserver methods|
+|private TeacherServer|teacherserver|teacherserver method to call teacherserver objects|
+|private String |netString|used to process certain input|
+|private static Object |gateKeeper|used for sychronization|
+
+
+|Method|Description|
+|------|------|
+|public void interact()|processes info sent from client|
+|public String convertToString(ArrayList<String> arrList)|used internally to help with processing client input|
+|public ArrayList<String> convertToArrayList(String str)|used internally to help with processing client input|
+|public ArrayList<Integer> convertToIntArrayList(String str) |used internally to help with processing client input|
+|public String convertToString(String[] arr) |used internally to help with processing client input|
+|public String[] returnFileNames(String str) |used internally to help with processing client input|
+
+
+
+
