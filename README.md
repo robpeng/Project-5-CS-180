@@ -96,6 +96,7 @@ students' quiz submissions.
 |public boolean editUsername(String username, String newUsername)|used when users want to edit their username|
 |public void editPassword(String password, String newPassword)|used when users want to edit their password|
 |public boolean deleteUser(String username, String password)|used when users want to delete their account|
+|private void writeRecordsToFile() |for internal use for writing usernames and passwords to file|
 
 ## StudentServer.java
 
