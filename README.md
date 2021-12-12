@@ -73,11 +73,11 @@ students' quiz submissions.
 
 |Modifier and Type|Field|Description|
 |------|---|---|
-|private ArrayList< String >|usernamesArray|stores usernames|
-|private ArrayList< String >|passwordsArray|stores passwords|
-|private int|userNumber|unique number for each user|
-|private String|username|username created by a user|
-private String|password|password created by a user|
+|String|usernameField|stores username field|
+|static ArrayList<Record>|records|stores usernames and passwords for short time|
+|File|f|long term storage of usernames and passwords|
+|private static Object|gateKeeper|used for synchronization to prevent race conditions|
+
 
 - Constructor Summary 
 
