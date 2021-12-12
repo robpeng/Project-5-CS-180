@@ -57,6 +57,10 @@ students' quiz submissions.
 - This class deals with the server side of the network interaction.
 - Summary of class NetworkServer
 
+|Method|Description|
+|------|------|
+|public static void main(String[] args)|main method where serversocket object is created and accepts connection from client. Also where thread is started.|
+|public void run()|run method where an InteractServer object is created and calls its interact() method|
 ```
  1) The class implements interface Runnable to create a thread, starting the thread causes the 
  object's run method to be called in that separately executing thread.
